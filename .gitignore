@@ -1,0 +1,28 @@
+/target
+node_modules/
+dist/
+
+# Tauri and Android build output
+app/src-tauri/target/
+app/src-tauri/gen/android/**/build/
+app/src-tauri/gen/android/.gradle/
+*.apk
+*.aab
+
+# Local sample kits - licensed sounds never enter the repo (see PLAN.md)
+/samples/
+*.wav
+!crates/**/testdata/*.wav
+
+# AI agents - plans, scratch, and temp dirs
+plans/
+.claude/
+.cursor/
+.codex/
+.cline/
+.continue/
+.opencode/
+.roo/
+.amp/
+.kiro/
+.gigacode_vsc
