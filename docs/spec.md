@@ -181,4 +181,5 @@ For the author. Answers replace the question with the rule.
     the phone locks or another app opens?
 11. **Phone layout:** a phone screen has no room for the kit photo and
     an open submenu side by side. May the submenu cover the photo (the
-    instrument buttons stay put)?
+    instrument buttons stay put)? And is it portrait only, or landscape
+    too? The prototype is drawn wide, where both fit.

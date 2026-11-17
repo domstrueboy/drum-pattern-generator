@@ -25,7 +25,11 @@ Settled; worth not re-litigating without a new reason.
   screen needs (notation, faders, a photo with highlights), and one UI
   covers Android, iOS and desktop. Flutter + flutter_rust_bridge is the
   fallback: the crates don't know the UI, so a switch replaces `app/`
-  only. Step 1 decides.
+  only. Confirmed by the step 1 spike (2026-11-17): all six checks
+  passed on the test phone - see *Android notes*.
+- **Portrait first**, as the spec says. The mockup is wide only because
+  Figma Make previews in a desktop browser. Landscape is the author's
+  call (spec Q11); a responsive layout keeps it cheap.
 - **Notation with VexFlow**, not hand-drawn SVG: beams, tuplets, x and
   diamond noteheads, parentheses, hidden staff lines - and drawn at the
   real width, never stretched.
@@ -63,8 +67,25 @@ Settled; worth not re-litigating without a new reason.
   the author, so it's his call too. Needed before the repo goes public.
 - **The spec's open questions** (docs/spec.md) - needed by step 2's
   rules, not before.
-- **Remote.** A GitHub repo on the personal account - public or
-  private, created when the first commit is ready.
+- **Remote.** A GitHub repo on the personal account - private until the
+  licence is chosen, then public if the author agrees.
+
+## Android notes
+
+From the step 1 spike (branch `spike/tauri-android`, kept, never
+merged). They constrain steps 4, 5 and 8.
+
+| Finding | Consequence |
+|---|---|
+| Loop steady while scrolling and tapping; WAV picked from storage and played; playback survives a locked screen; playhead in step with the sound | Tauri passes the gate |
+| AAudio needs API 26; Tauri's default minSdk 24 fails to link `-laaudio` | `bundle.android.minSdkVersion: 26` |
+| cpal asks for AAudio's low-latency mode only with its `realtime` feature; without it output lagged 0.3-0.5 s | `dpg-hal` enables `realtime` |
+| AAudio's default buffer is its whole capacity (2048 frames, 43 ms); a fixed 256-frame request keeps 512 | `dpg-hal` asks for a fixed buffer on Android; total output latency 43 ms, 0 xruns |
+| The remaining 32 ms is the phone's fast-mixer path: its MediaTek driver refuses MMAP for the speaker | 43 ms is the floor on this phone's speaker; it only matters for live pads, which the spec doesn't have |
+| Output latency is reported per callback (`playback - callback` timestamps) | The playhead and kit highlights subtract it, so they match what's heard on any output, Bluetooth included |
+| Picking a file: the dialog plugin returns a `content://` URI; the fs plugin reads it from Rust | No storage permission needed; no JS file access |
+| Screen off worked without a foreground service on the test phone | Other vendors' battery savers may still stop it - revisit in step 8 (spec Q10) |
+| `tauri android build/dev` symlinks the library into `jniLibs`, which Windows refuses without Developer Mode | Turn on Developer Mode, or copy the `.so` and run `gradlew assembleArm64Debug -x rustBuildArm64Debug` |
 
 ## Roadmap
 
@@ -72,45 +93,17 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-Planned 2026-11-16 in a session outside this repo. In order:
-
-1. **Step 0 is written but not committed.** Review it with the user;
-   the user commits.
+1. **Remote:** the user creates the private GitHub repo and pushes
+   `main` and the spike branch.
 2. **The author's answers** to the spec's open questions may have come
-   in - fold them into docs/spec.md.
-3. **Step 1a:** the Android toolchain. Android Studio was uninstalled
-   from this laptop on purpose (2026-08), so prefer the command-line
-   tools and a standalone JDK; ask before installing.
-
-### 0. Repo and docs - this step
-
-README, AGENTS.md, PLAN.md, the spec in English and the original in
-Russian.
-
-### 1. Test app - throwaway, decides Tauri
-
-On a branch `spike/tauri-android`, never merged; findings land here.
-
-- **1a. Toolchain on Windows:** a JDK (17+), the Android SDK
-  (command-line tools, a platform, build-tools, the NDK), Rust's
-  `aarch64-linux-android` target, the Tauri CLI. Ask before installing:
-  several GB.
-- **1b.** Tauri 2 + Vue scaffold; runs as a desktop window, then on the
-  phone through `tauri android dev`.
-- **1c. Sound:** Rust plays a WAV through cpal (AAudio) on a tap, then a
-  16th loop at 120 BPM. Listen for wobble while scrolling and tapping.
-- **1d. Files:** pick a WAV from phone storage and play it.
-- **1e. Screen off:** does playback survive a locked screen, or does it
-  need a foreground service (a small Kotlin plugin)?
-- **1f. Sync:** a playhead driven by Rust's play position stays in step
-  with what's heard.
-
-**Gate:** all six pass -> Tauri. Otherwise the failing point decides
-between fixing it and Flutter.
+   in - fold them into docs/spec.md. Step 2's rules need Q1, Q2, Q5,
+   Q6 and Q9.
+3. **Step 2:** split into sub-steps with the user, then start with the
+   model (bars, ticks, instruments, hit kinds) - it needs no answers.
 
 ### 2. `drum-patterns`
 
-Pure, tested, in parallel with step 1. The model (1-4 bars, 48 ticks,
+Pure, tested. The model (1-4 bars, 48 ticks,
 instruments, hit kinds accent / normal / ghost), then each submenu's
 rules: hi-hat pulses, snare accents and feel, ghost notes simple to
 complex, base and extra kicks, Random. Seeded RNG throughout. Count and
@@ -132,6 +125,10 @@ kit while playing, the play position published for the UI.
 
 The whole screen on the phone, plain visuals: bars, metronome,
 transport, VexFlow notation, faders, the three instrument submenus.
+The author's prototype ([docs/mockup.html](docs/mockup.html)) is the
+reference for order and colour (dark; hi-hat cyan, snare white, kick
+orange), reflowed for portrait; where it and the spec differ, the spec
+wins.
 
 ### 6. Sounds
 
