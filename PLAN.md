@@ -97,9 +97,8 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **The author's answers are in the spec** (two rounds, 2026-11-17).
-   One question remains - what double time means - and it blocks only
-   that feel.
+1. **The author's answers are in the spec** (2026-11-17); no question
+   is open, so nothing in step 2 is blocked.
 2. **Step 2:** agree the sub-steps with the user, then start with the
    model (bars, ticks, time signature, instruments, hit kinds) - it
    needs no answers.

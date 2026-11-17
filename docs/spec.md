@@ -136,7 +136,7 @@ the next one.
   |---|---|
   | basic | beats 2 and 4 |
   | half time | beat 3 only |
-  | double time | two main hits, as usual - see the open questions |
+  | double time | every "и" - four a bar: 2 and 4 counted at double speed |
 
 - **Accents** a bar: 2, 3 or 4 accented snare hits on the 8ths
   (`1 и 2 и 3 и 4 и`), added on top of the feel's main hits.
@@ -211,8 +211,4 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-Two rounds were answered on 2026-11-17; this is what's left.
-
-1. **Double time:** "two main hits, as usual" - on which 8ths? If they
-   sit on beats 2 and 4, as in basic, what makes it double time - the
-   hi-hat and kicks running twice as fast?
+None right now - all were answered on 2026-11-17. New ones go here.
