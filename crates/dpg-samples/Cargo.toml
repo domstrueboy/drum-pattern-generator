@@ -1,0 +1,15 @@
+[package]
+name = "dpg-samples"
+version = "0.1.0"
+description = "Turns audio files into ready-to-play drum sounds - no audio device"
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+symphonia = { version = "0.6.1", default-features = false, features = ["aac", "flac", "isomp4", "mp3", "pcm", "wav"] }
+
+[dev-dependencies]
+hound = "3.5.1"

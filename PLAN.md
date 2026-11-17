@@ -97,8 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 3** (`dpg-samples`), once 2h is reviewed and committed. Plan
-   it first: decoders, the kit format, where kits live.
+1. **Step 3b** (resample), once 3a is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -116,9 +115,24 @@ pattern and regenerates parts by hand).
 
 ### 3. `dpg-samples`
 
-Decode WAV / FLAC / MP3 / M4A (phones record M4A), resample to the
-device rate, trim leading silence (a home recording's 30 ms makes a drum
-sound late), normalise, mono. The kit format and where kits are stored.
+Audio file bytes (Android gives a content link, not a path) to a
+ready-to-play mono `f32` sound. Symphonia decodes, rubato resamples.
+Test tones are made by ffmpeg from a formula
+(`crates/dpg-samples/testdata/make.ps1`).
+
+Done: 3a (decode WAV / FLAC / MP3 / M4A to mono at the file's rate;
+over 10 s is refused).
+
+- **3b. Resample** to the device rate.
+- **3c. Trim and level:** cut the silence before the hit (a home
+  recording's 30 ms makes a drum sound late, and MP3 / AAC pad the
+  start) keeping ~1 ms of attack; cut the silent tail with a short
+  fade; one gain per instrument, so a ghost sample stays quieter.
+- **3d. Kit:** a sound per instrument, 1 or 2 samples, mapped to accent
+  / normal / ghost per the spec (1 sample: 0 / -4 / -14 dB to start,
+  tuned by ear later). An ignored test loads the local DP-2000 kit.
+  Presets and copying a user's samples into app storage come in step
+  6; the saved kit choice in step 8.
 
 ### 4. `dpg-hal` and `dpg-engine`
 
