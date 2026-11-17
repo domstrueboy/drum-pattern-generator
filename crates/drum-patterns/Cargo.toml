@@ -7,3 +7,9 @@ publish.workspace = true
 
 [lints]
 workspace = true
+
+[dependencies]
+rand = { version = "0.10.4", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+rand = "0.10.4"

@@ -97,8 +97,8 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 2d** (snare feel and accents), once 2c is reviewed and
-   committed. No spec question is open.
+1. **Step 2e** (kicks), once 2d is reviewed and committed. No spec
+   question is open.
 
 ### 2. `drum-patterns`
 
@@ -106,10 +106,9 @@ Pure, tested, one commit per sub-step. Randomness through `rand`: every
 generator takes `&mut impl Rng` from the caller. The crash isn't here -
 it follows bars of playback, so it's the engine's (step 4).
 
-Done: 2a (the model), 2b (count and konnakol), 2c (hi-hat pulse).
+Done: 2a (the model), 2b (count and konnakol), 2c (hi-hat pulse),
+2d (snare feel and accents).
 
-- **2d. Snare feel and accents:** basic / half / double time, 2-4
-  accents on 8ths on top.
 - **2e. Kicks:** base kicks (a count, on free 8ths), extra kicks (a
   count, on 16ths).
 - **2f. Ghost notes:** a count; each Generate harder; avoid accents,

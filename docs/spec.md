@@ -145,7 +145,9 @@ the next one.
   | double time | every "и" - four a bar: 2 and 4 counted at double speed |
 
 - **Accents** a bar: 2, 3 or 4 accented snare hits on the 8ths
-  (`1 и 2 и 3 и 4 и`), added on top of the feel's main hits.
+  (`1 и 2 и 3 и 4 и`), added on top of the feel's main hits - never on
+  a main hit or a kick. Each bar gets its own; a 1-bar pattern repeats
+  them.
 
 - **Ghost notes:** a count, and **Generate**. Mostly on weak 16ths.
   Each press of Generate gives a harder variant than the last - there's
