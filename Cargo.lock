@@ -83,6 +83,7 @@ dependencies = [
 name = "dpg-samples"
 version = "0.1.0"
 dependencies = [
+ "drum-patterns",
  "hound",
  "rubato",
  "symphonia",

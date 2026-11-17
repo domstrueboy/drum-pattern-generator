@@ -97,7 +97,9 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 3d** (kit), once 3c is reviewed and committed.
+1. **Step 4** (`dpg-hal` and `dpg-engine`), once 3d is reviewed and
+   committed. Plan it first: it is the largest step, so split it into
+   sub-steps and settle how sounds reach the audio thread.
 
 ### 2. `drum-patterns`
 
@@ -125,13 +127,13 @@ over 10 s is refused), 3b (resample to the device rate; rubato's `Fft`,
 its delay taken off so a hit stays on time), 3c (trim from 1 ms
 before the hit, -40 dB below the peak, to where the ring falls to
 -60 dB; one gain per instrument brings its loudest peak to full scale,
-so a ghost sample stays quieter).
+so a ghost sample stays quieter), 3d (`Kit` and `Sound`: 1 or 2
+samples, accent / normal / ghost at 0 / -4 / -14 dB, or the ghost
+sample at the normal gain; `Sound::load` runs the whole chain).
 
-- **3d. Kit:** a sound per instrument, 1 or 2 samples, mapped to accent
-  / normal / ghost per the spec (1 sample: 0 / -4 / -14 dB to start,
-  tuned by ear later). An ignored test loads the local DP-2000 kit.
-  Presets and copying a user's samples into app storage come in step
-  6; the saved kit choice in step 8.
+The local DP-2000 kit loads (`DPG_KIT_DIR`, ignored test): its files
+already start on the hit; its ghost sample peaks 28 dB below the normal
+one - judge by ear in step 4 whether that is too quiet on a phone.
 
 ### 4. `dpg-hal` and `dpg-engine`
 

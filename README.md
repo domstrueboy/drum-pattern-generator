@@ -6,7 +6,8 @@ Android first, iOS later.
 
 **Status:** the shell is decided - a throwaway spike (branch
 `spike/tauri-android`) played a sample-exact loop on the test phone.
-The app itself isn't built yet - see [PLAN.md](PLAN.md).
+Done: `drum-patterns` (every generator rule) and `dpg-samples` (audio
+files to kit sounds). Next: the engine - see [PLAN.md](PLAN.md).
 
 - [docs/spec.md](docs/spec.md) - what the app does, rule by rule
 - [docs/spec-original-ru.md](docs/spec-original-ru.md) - the original

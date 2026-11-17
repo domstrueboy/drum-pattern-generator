@@ -9,6 +9,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
+drum-patterns = { path = "../drum-patterns" }
 symphonia = { version = "0.6.1", default-features = false, features = ["aac", "flac", "isomp4", "mp3", "pcm", "wav"] }
 rubato = "5.1.0"
 
