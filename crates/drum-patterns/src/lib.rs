@@ -10,12 +10,14 @@ mod ladder;
 mod pattern;
 mod snare;
 mod time;
+mod variants;
 
 pub use count::{CountLabel, CountMark, count};
 pub use ghost_notes::{GHOST_LEVELS, ghost_notes};
-pub use hi_hat::hi_hat_pulse;
+pub use hi_hat::{HI_HAT_DENSITY, hi_hat_pulse, hi_hat_random};
 pub use kick::{EXTRA_KICK_LEVELS, base_kicks, extra_kicks};
 pub use konnakol::{KonnakolMark, Syllable, konnakol};
 pub use pattern::{Hit, HitKind, Instrument, MAX_BARS, Pattern, PatternError};
 pub use snare::{Feel, snare};
 pub use time::{NoteValue, TICKS_PER_QUARTER, TimeSignature};
+pub use variants::Variants;

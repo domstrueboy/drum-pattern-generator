@@ -120,7 +120,15 @@ of the pattern: **once at the start**, **every квадрат** (4 bars),
 
 Hi-hat and ghost notes each have **Random** with a count N from 1 to
 24: a set of N variants, within the chosen settings; each press steps to
-the next one.
+the next one, and after the last back to the first.
+
+- **Hi-hat:** hi-hats at random places on the chosen pulse's grid. The
+  beats (1, 2, 3, 4 in 4/4) always keep their hi-hat, where the pulse
+  lands on them; each other hit stays with the chance the **Density**
+  setting gives - by default a coin toss, about half. No bar is left
+  empty.
+- **Ghost notes:** the ghost notes for the chosen count and level,
+  placed afresh for each variant.
 
 ## Hi-hat submenu
 
@@ -133,6 +141,8 @@ the next one.
   1-bar pattern still hears the full cycle. The notation redraws the
   hi-hat each loop to show what is played.
 - **Random** (see above).
+- **Density:** how many of Random's off-beat hits stay, sparser to
+  denser; 50% by default.
 
 ## Snare submenu
 
@@ -234,4 +244,4 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-None right now. New ones go here.
+None right now.

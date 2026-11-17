@@ -97,7 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 2g** (Random), once 2f is reviewed and committed.
+1. **Step 2h** (groove), once 2g is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -107,10 +107,9 @@ it follows bars of playback, so it's the engine's (step 4).
 
 Done: 2a (the model), 2b (count and konnakol), 2c (hi-hat pulse),
 2d (snare feel and accents), 2e (base kicks), 2f (ghost notes and extra
-kicks, on one difficulty ladder - the app keeps the level).
+kicks, on one difficulty ladder - the app keeps the level), 2g (Random:
+a seeded set of N variants; the app keeps seed, N and index).
 
-- **2g. Random:** a set of N variants (1-24) stepped through, for
-  hi-hat and ghost notes.
 - **2h. Groove:** one settings struct -> one `Pattern`, for the app and
   the looper.
 

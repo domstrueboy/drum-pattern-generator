@@ -87,3 +87,124 @@ fn six_eight_eighths_fill_six_per_bar() {
     let p = pulsed(TimeSignature::new(6, 8).unwrap(), 1, NoteValue::Eighth);
     assert_eq!(hat_ticks(&p), [0, 6, 12, 18, 24, 30]);
 }
+
+mod random {
+    use std::collections::HashSet;
+
+    use rand::SeedableRng;
+    use rand::rngs::StdRng;
+
+    use super::*;
+    use crate::variants::Variants;
+
+    fn random_hats(bars: u8, pulse: NoteValue, density: u8, seed: u64) -> Pattern {
+        let mut p = Pattern::new(TimeSignature::FOUR_FOUR, bars).unwrap();
+        hi_hat_random(&mut p, pulse, density, &mut StdRng::seed_from_u64(seed));
+        p
+    }
+
+    fn off_beats(p: &Pattern) -> usize {
+        hat_ticks(p).iter().filter(|t| *t % 12 != 0).count()
+    }
+
+    #[test]
+    fn hits_stay_on_the_pulse_grid() {
+        for pulse in NoteValue::ALL {
+            for seed in 0..20 {
+                let p = random_hats(3, pulse, HI_HAT_DENSITY, seed);
+                for t in hat_ticks(&p) {
+                    assert_eq!(t % pulse.ticks(), 0, "{pulse:?} seed {seed}: {t}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn every_beat_the_pulse_lands_on_keeps_its_hit() {
+        for pulse in NoteValue::ALL {
+            for seed in 0..20 {
+                let p = random_hats(3, pulse, 0, seed);
+                let hats = hat_ticks(&p);
+                let beats: Vec<u32> = pulsed(TimeSignature::FOUR_FOUR, 3, pulse)
+                    .hits()
+                    .iter()
+                    .map(|h| h.tick)
+                    .filter(|t| t % 12 == 0)
+                    .collect();
+                assert_eq!(hats, beats, "{pulse:?} seed {seed}");
+            }
+        }
+    }
+
+    #[test]
+    fn no_bar_is_left_empty() {
+        for pulse in NoteValue::ALL {
+            for seed in 0..50 {
+                let p = random_hats(3, pulse, 0, seed);
+                for bar in 0..3 {
+                    let any = hat_ticks(&p).iter().any(|t| t / 48 == bar);
+                    assert!(any, "{pulse:?} seed {seed}: bar {bar} is empty");
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn a_bar_off_every_beat_still_keeps_a_hit() {
+        // In 1/4 a dotted quarter skips the second bar's beat.
+        let mut p = Pattern::new(TimeSignature::new(1, 4).unwrap(), 2).unwrap();
+        hi_hat_random(
+            &mut p,
+            NoteValue::DottedQuarter,
+            0,
+            &mut StdRng::seed_from_u64(1),
+        );
+        assert_eq!(hat_ticks(&p), [0, 18]);
+    }
+
+    #[test]
+    fn the_default_keeps_about_half_of_the_off_beats() {
+        let kept: usize = (0..100)
+            .map(|seed| off_beats(&random_hats(1, NoteValue::Sixteenth, HI_HAT_DENSITY, seed)))
+            .sum();
+        // 100 bars of 12 off-beat 16ths: about 600, comfortably inside 500-700.
+        assert!((500..=700).contains(&kept), "kept {kept}");
+    }
+
+    #[test]
+    fn density_sets_how_many_off_beats_stay() {
+        let kept = |density| -> usize {
+            (0..100)
+                .map(|seed| off_beats(&random_hats(1, NoteValue::Sixteenth, density, seed)))
+                .sum()
+        };
+        assert_eq!(kept(0), 0);
+        assert!(kept(25) < kept(75), "{} vs {}", kept(25), kept(75));
+        assert_eq!(kept(100), 1200);
+        assert_eq!(kept(255), 1200);
+    }
+
+    #[test]
+    fn variants_differ_and_rebuild_the_same() {
+        let v = Variants::new(2026, 6);
+        let build = |index: u8| {
+            let mut p = Pattern::new(TimeSignature::FOUR_FOUR, 1).unwrap();
+            let rng = &mut v.rng::<StdRng>(index);
+            hi_hat_random(&mut p, NoteValue::Sixteenth, HI_HAT_DENSITY, rng);
+            hat_ticks(&p)
+        };
+        let all: HashSet<Vec<u32>> = (0..6).map(build).collect();
+        assert_eq!(all.len(), 6);
+        assert_eq!(build(4), build(4));
+    }
+
+    #[test]
+    fn rewrites_the_hi_hat_only() {
+        let mut p = random_hats(1, NoteValue::Sixteenth, 100, 1);
+        p.set(Hit::new(12, Instrument::Snare, HitKind::Normal))
+            .unwrap();
+        hi_hat_random(&mut p, NoteValue::Quarter, 0, &mut StdRng::seed_from_u64(2));
+        assert_eq!(hat_ticks(&p), [0, 12, 24, 36]);
+        assert!(p.get(12, Instrument::Snare).is_some());
+    }
+}
