@@ -3,6 +3,7 @@
 
 mod count;
 mod ghost_notes;
+mod groove;
 mod hi_hat;
 mod kick;
 mod konnakol;
@@ -14,6 +15,7 @@ mod variants;
 
 pub use count::{CountLabel, CountMark, count};
 pub use ghost_notes::{GHOST_LEVELS, ghost_notes};
+pub use groove::Groove;
 pub use hi_hat::{HI_HAT_DENSITY, hi_hat_pulse, hi_hat_random};
 pub use kick::{EXTRA_KICK_LEVELS, base_kicks, extra_kicks};
 pub use konnakol::{KonnakolMark, Syllable, konnakol};

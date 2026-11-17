@@ -43,8 +43,13 @@ impl Variants {
     /// always the same for the same set and index, different between
     /// variants.
     pub fn rng<R: SeedableRng>(&self, index: u8) -> R {
-        const GOLDEN: u64 = 0x9E37_79B9_7F4A_7C15; // spreads nearby indices apart
-        let index = u64::from(index % self.count);
-        R::seed_from_u64(self.seed ^ (index + 1).wrapping_mul(GOLDEN))
+        R::seed_from_u64(mix(self.seed, u64::from(index % self.count)))
     }
+}
+
+/// Seed number `n` drawn from `seed`: the same pair always gives the same
+/// seed, and nearby `n` give seeds far apart.
+pub(crate) fn mix(seed: u64, n: u64) -> u64 {
+    const GOLDEN: u64 = 0x9E37_79B9_7F4A_7C15;
+    seed ^ (n + 1).wrapping_mul(GOLDEN)
 }

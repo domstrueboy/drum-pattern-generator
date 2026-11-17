@@ -9,7 +9,7 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-rand = { version = "0.10.4", default-features = false, features = ["alloc"] }
+rand = { version = "0.10.4", default-features = false, features = ["alloc", "std_rng"] }
 
 [dev-dependencies]
 rand = "0.10.4"
