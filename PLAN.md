@@ -97,7 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 3c** (trim and level), once 3b is reviewed and committed.
+1. **Step 3d** (kit), once 3c is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -122,11 +122,11 @@ Test tones are made by ffmpeg from a formula
 
 Done: 3a (decode WAV / FLAC / MP3 / M4A to mono at the file's rate;
 over 10 s is refused), 3b (resample to the device rate; rubato's `Fft`,
-its delay taken off so a hit stays on time).
-- **3c. Trim and level:** cut the silence before the hit (a home
-  recording's 30 ms makes a drum sound late, and MP3 / AAC pad the
-  start) keeping ~1 ms of attack; cut the silent tail with a short
-  fade; one gain per instrument, so a ghost sample stays quieter.
+its delay taken off so a hit stays on time), 3c (trim from 1 ms
+before the hit, -40 dB below the peak, to where the ring falls to
+-60 dB; one gain per instrument brings its loudest peak to full scale,
+so a ghost sample stays quieter).
+
 - **3d. Kit:** a sound per instrument, 1 or 2 samples, mapped to accent
   / normal / ghost per the spec (1 sample: 0 / -4 / -14 dB to start,
   tuned by ear later). An ignored test loads the local DP-2000 kit.
