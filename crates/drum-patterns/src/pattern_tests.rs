@@ -134,3 +134,24 @@ fn instruments_run_top_of_the_staff_first() {
     sorted.sort();
     assert_eq!(sorted, Instrument::ALL);
 }
+
+#[test]
+fn retain_keeps_what_it_accepts() {
+    let mut p = one_bar();
+    for tick in [0, 3, 6, 9] {
+        p.set(normal(tick, Instrument::Kick)).unwrap();
+    }
+    p.set(normal(6, Instrument::Snare)).unwrap();
+
+    p.retain(|h| h.instrument != Instrument::Kick || h.tick % 6 != 0);
+
+    let left: Vec<(u32, Instrument)> = p.hits().iter().map(|h| (h.tick, h.instrument)).collect();
+    assert_eq!(
+        left,
+        [
+            (3, Instrument::Kick),
+            (6, Instrument::Snare),
+            (9, Instrument::Kick)
+        ]
+    );
+}

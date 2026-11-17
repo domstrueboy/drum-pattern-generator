@@ -173,6 +173,13 @@ impl Pattern {
         self.hits.retain(|h| h.instrument != instrument);
     }
 
+    /// Keeps only the hits `keep` accepts - for a generator that rewrites
+    /// part of an instrument, such as the base kicks but not the extra
+    /// ones.
+    pub fn retain(&mut self, keep: impl FnMut(&Hit) -> bool) {
+        self.hits.retain(keep);
+    }
+
     fn find(&self, tick: u32, instrument: Instrument) -> Result<usize, usize> {
         self.hits
             .binary_search_by_key(&(tick, instrument), |h| (h.tick, h.instrument))

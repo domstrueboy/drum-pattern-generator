@@ -3,6 +3,7 @@
 
 mod count;
 mod hi_hat;
+mod kick;
 mod konnakol;
 mod pattern;
 mod snare;
@@ -10,6 +11,7 @@ mod time;
 
 pub use count::{CountLabel, CountMark, count};
 pub use hi_hat::hi_hat_pulse;
+pub use kick::base_kicks;
 pub use konnakol::{KonnakolMark, Syllable, konnakol};
 pub use pattern::{Hit, HitKind, Instrument, MAX_BARS, Pattern, PatternError};
 pub use snare::{Feel, snare};

@@ -97,8 +97,8 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 2e** (kicks), once 2d is reviewed and committed. No spec
-   question is open.
+1. **Step 2f** (ghost notes and extra kicks), once 2e is committed and
+   the difficulty ladder is agreed.
 
 ### 2. `drum-patterns`
 
@@ -107,12 +107,11 @@ generator takes `&mut impl Rng` from the caller. The crash isn't here -
 it follows bars of playback, so it's the engine's (step 4).
 
 Done: 2a (the model), 2b (count and konnakol), 2c (hi-hat pulse),
-2d (snare feel and accents).
+2d (snare feel and accents), 2e (base kicks).
 
-- **2e. Kicks:** base kicks (a count, on free 8ths), extra kicks (a
-  count, on 16ths).
-- **2f. Ghost notes:** a count; each Generate harder; avoid accents,
-  then kicks.
+- **2f. Ghost notes and extra kicks:** a count each; each Generate
+  harder - one difficulty ladder for both, agreed with the user first.
+  Extra kicks sit between the 8ths, so they never meet the base kicks.
 - **2g. Random:** a set of N variants (1-24) stepped through, for
   hi-hat and ghost notes.
 - **2h. Groove:** one settings struct -> one `Pattern`, for the app and
