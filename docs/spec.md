@@ -149,19 +149,34 @@ the next one.
   a main hit or a kick. Each bar gets its own; a 1-bar pattern repeats
   them.
 
-- **Ghost notes:** a count, and **Generate**. Mostly on weak 16ths.
-  Each press of Generate gives a harder variant than the last - there's
-  no separate difficulty setting. Simple variants avoid the positions
-  right next to the accents; harder ones may take any 16th, but at first
-  still avoid the kicks.
+- **Ghost notes:** a count a bar, and **Generate**. Each press gives a
+  harder variant than the last - there's no separate difficulty
+  setting. Each level opens new positions, and a variant uses at least
+  one of them:
+
+  | Level | Ghost notes may go |
+  |---|---|
+  | 1 | on weak 16ths (`e`, `a`), not next to an accent, not on a kick |
+  | 2 | on weak 16ths, next to accents too |
+  | 3 | on any free 16th, 8ths too - still not on a kick |
+  | 4 | on any free 16th, on a kick too |
+
+  After the top level, Generate keeps giving new variants at the top.
 - **Random** (see above).
 
 ## Kick submenu
 
 - **Base kicks:** a count the user sets, and **Generate**. On 8ths
   only, inside the bar, on the 8ths the snare doesn't take.
-- **Extra kicks:** a count the user sets, and **Generate**. On 16ths,
-  working like the ghost notes.
+- **Extra kicks:** a count a bar, and **Generate**, harder with each
+  press like the ghost notes. Only on the 16ths between the 8ths, never
+  on a snare hit:
+
+  | Level | Extra kicks may go |
+  |---|---|
+  | 1 | on the `a` before a beat, not next to an accent |
+  | 2 | on any weak 16th (`e` too), not next to an accent |
+  | 3 | next to accents too |
 
 ## Sound menu
 
