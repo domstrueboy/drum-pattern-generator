@@ -88,7 +88,14 @@ impl Engine {
         let host = cpal::default_host();
         let device = host.default_output_device().ok_or("no output device")?;
         let supported = device.default_output_config().map_err(|e| e.to_string())?;
-        let config = supported.config();
+        #[allow(unused_mut)]
+        let mut config = supported.config();
+        // AAudio's default client buffer is its whole capacity (2048 frames,
+        // ~43 ms on the test phone). One mixer burst keeps only ~5 ms.
+        #[cfg(target_os = "android")]
+        {
+            config.buffer_size = cpal::BufferSize::Fixed(256);
+        }
         let info = EngineInfo {
             device: device.description().map(|d| d.to_string()).unwrap_or_default(),
             sample_rate: config.sample_rate,
