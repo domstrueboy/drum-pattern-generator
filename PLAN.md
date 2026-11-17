@@ -97,9 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4** (`dpg-hal` and `dpg-engine`), once 3d is reviewed and
-   committed. Plan it first: it is the largest step, so split it into
-   sub-steps and settle how sounds reach the audio thread.
+1. **Step 4b** (clock), once 4a is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -137,12 +135,35 @@ one - judge by ear in step 4 whether that is too quiet on a phone.
 
 ### 4. `dpg-hal` and `dpg-engine`
 
-Output backend + mock. Voice pool, per-instrument level, solo, mute,
-drums and metronome buses, metronome subdivisions, bar skip, the crash
-counted in bars of playback (once, every 4 bars, every 8...), a dotted
-hi-hat pulse drifting on across loops (`hi_hat_pulse` gains a starting
-offset; the next loop's hi-hat is prepared off the audio thread),
-swapping a kit while playing, the play position published for the UI.
+UI -> audio: atomics for continuous values (faders, BPM, mute, solo);
+a pattern or a kit is built whole off the audio thread, sent through an
+rtrb queue, swapped in, and the old one sent back to be freed. Voices
+still ringing on a replaced kit finish on it first. The position and
+the hits (for the kit highlights) come back as atomics.
+
+Decided: a new pattern plays at once, from the same place in the bar;
+metronome - bar's first beat a higher click, beats normal, subdivisions
+quieter; a solo silences the crash; BPM 30-300.
+
+Done: 4a (`dpg-hal`: `CpalOutput` opens the default output - fixed 256
+frames on Android, `realtime`, any format to `f32` - clips once on the
+way out, flags a lost device; `MockOutput` for tests; the `cpal`
+feature is off for crates that only need the trait).
+
+- **4b. Clock:** frames <-> ticks at a tempo, each event rounded from its
+  exact place; a BPM change keeps the beat; bars of playback counted.
+- **4c. Voices and mixer:** 32 voices, the oldest cut with a short fade
+  when full; per-instrument level / solo / mute; Drums and Metronome
+  faders.
+- **4d. Playing a groove:** start / stop, pattern and kit swaps while
+  playing, the position published. Offline render tests; a test fails
+  if the audio thread allocates.
+- **4e. Metronome:** 1-4 clicks a beat (4 / 8 / 8т / 16), one generated
+  click for now (five sounds in step 6); tap tempo.
+- **4f. Playback rules:** bar skip, the crash every K bars of playback,
+  the dotted hi-hat drifting across loops.
+- **4g. Listen on Windows:** a command-line player with the local kit,
+  to judge the ghost level and the -4 / -14 dB defaults by ear.
 
 ### 5. First real UI
 

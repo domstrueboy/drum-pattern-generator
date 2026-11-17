@@ -1,0 +1,17 @@
+[package]
+name = "dpg-hal"
+version = "0.1.0"
+description = "Audio output devices and streams, plus a mock - nothing about patterns"
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+default = ["cpal"]
+# The real devices. Off for crates that only need the trait and the mock.
+cpal = ["dep:cpal"]
+
+[dependencies]
+cpal = { version = "0.18", features = ["realtime"], optional = true }
