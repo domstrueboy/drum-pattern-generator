@@ -97,20 +97,30 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **The author's answers are in the spec** (2026-11-17); no question
-   is open, so nothing in step 2 is blocked.
-2. **Step 2:** agree the sub-steps with the user, then start with the
-   model (bars, ticks, time signature, instruments, hit kinds) - it
-   needs no answers.
+1. **Step 2b** (count and konnakol), once 2a is reviewed and committed.
+   No spec question is open.
 
 ### 2. `drum-patterns`
 
-Pure, tested. The model (1-4 bars, 12 ticks a quarter, a time
-signature, instruments, hit kinds accent / normal / ghost), then each
-submenu's rules: hi-hat pulses, snare accents and feel, ghost notes
-getting harder with each Generate, base and extra kicks, Random (a set
-of N variants stepped through). Seeded RNG throughout. Count and
-konnakol derived from a pattern.
+Pure, tested, one commit per sub-step. Randomness through `rand`: every
+generator takes `&mut impl Rng` from the caller. The crash isn't here -
+it follows bars of playback, so it's the engine's (step 4).
+
+- **2a. Workspace and model** - this step: time signature (4/4 first),
+  12 ticks a quarter, 1-4 bars, instruments, hit kinds, note values.
+- **2b. Count and konnakol:** the 8th count; `т`/`к` on 16ths, `т к т`
+  on triplets, only under notes.
+- **2c. Hi-hat pulse:** the eight pulses -> hits.
+- **2d. Snare feel and accents:** basic / half / double time, 2-4
+  accents on 8ths on top.
+- **2e. Kicks:** base kicks (a count, on free 8ths), extra kicks (a
+  count, on 16ths).
+- **2f. Ghost notes:** a count; each Generate harder; avoid accents,
+  then kicks.
+- **2g. Random:** a set of N variants (1-24) stepped through, for
+  hi-hat and ghost notes.
+- **2h. Groove:** one settings struct -> one `Pattern`, for the app and
+  the looper.
 
 ### 3. `dpg-samples`
 
