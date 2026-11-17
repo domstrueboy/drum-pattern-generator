@@ -97,7 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 3b** (resample), once 3a is reviewed and committed.
+1. **Step 3c** (trim and level), once 3b is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -121,9 +121,8 @@ Test tones are made by ffmpeg from a formula
 (`crates/dpg-samples/testdata/make.ps1`).
 
 Done: 3a (decode WAV / FLAC / MP3 / M4A to mono at the file's rate;
-over 10 s is refused).
-
-- **3b. Resample** to the device rate.
+over 10 s is refused), 3b (resample to the device rate; rubato's `Fft`,
+its delay taken off so a hit stays on time).
 - **3c. Trim and level:** cut the silence before the hit (a home
   recording's 30 ms makes a drum sound late, and MP3 / AAC pad the
   start) keeping ~1 ms of attack; cut the silent tail with a short

@@ -1,8 +1,7 @@
 use std::io::Cursor;
 
 use super::*;
-
-const TONE_HZ: f32 = 440.0;
+use crate::test_audio::{TONE_HZ, peak, pitch, sine};
 
 /// A WAV file in memory, one `frames` entry per frame, one value per channel.
 fn wav(rate: u32, bits: u16, float: bool, frames: &[Vec<f32>]) -> Vec<u8> {
@@ -33,34 +32,15 @@ fn wav(rate: u32, bits: u16, float: bool, frames: &[Vec<f32>]) -> Vec<u8> {
 }
 
 fn tone(rate: u32, seconds: f32, channels: usize) -> Vec<Vec<f32>> {
-    let frames = (rate as f32 * seconds) as usize;
-    (0..frames)
-        .map(|i| {
-            let s = 0.5 * (2.0 * std::f32::consts::PI * TONE_HZ * i as f32 / rate as f32).sin();
-            vec![s; channels]
-        })
+    sine(rate, seconds, TONE_HZ)
+        .into_iter()
+        .map(|s| vec![s; channels])
         .collect()
 }
 
 fn fixture(name: &str) -> Vec<u8> {
     let path = format!("{}/testdata/{name}", env!("CARGO_MANIFEST_DIR"));
     std::fs::read(path).unwrap()
-}
-
-fn peak(samples: &[f32]) -> f32 {
-    samples.iter().fold(0.0, |m, s| m.max(s.abs()))
-}
-
-/// The tone's pitch from its rising zero crossings, over the middle half
-/// (lossy codecs smear the edges).
-fn pitch(audio: &Audio) -> f32 {
-    let n = audio.samples.len();
-    let middle = &audio.samples[n / 4..3 * n / 4];
-    let rising = middle
-        .windows(2)
-        .filter(|w| w[0] < 0.0 && w[1] >= 0.0)
-        .count();
-    rising as f32 * audio.rate as f32 / middle.len() as f32
 }
 
 /// Checks a decoded 0.5 s half-scale tone at 440 Hz.
