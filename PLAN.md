@@ -27,15 +27,19 @@ Settled; worth not re-litigating without a new reason.
   fallback: the crates don't know the UI, so a switch replaces `app/`
   only. Confirmed by the step 1 spike (2026-11-17): all six checks
   passed on the test phone - see *Android notes*.
-- **Portrait first**, as the spec says. The mockup is wide only because
-  Figma Make previews in a desktop browser. Landscape is the author's
-  call (spec Q11); a responsive layout keeps it cheap.
+- **Two layouts, portrait first.** The author wants portrait and
+  landscape; portrait is how a phone sits on a stand, so it comes first
+  and the layout stays responsive. The mockup is wide only because Figma
+  Make previews in a desktop browser.
 - **Notation with VexFlow**, not hand-drawn SVG: beams, tuplets, x and
   diamond noteheads, parentheses, hidden staff lines - and drawn at the
   real width, never stretched.
-- **48 ticks a bar** (12 a beat): the smallest grid holding 16ths,
-  every triplet and both dotted values (see the spec's table).
-- **A kit is data:** each instrument holds one or more samples. Built-in
+- **12 ticks a quarter note** (48 a bar in 4/4): the smallest grid
+  holding 16ths, every triplet and both dotted values (see the spec's
+  table). The model carries a time signature: 4/4 first, others later.
+- **A kit is data:** each instrument holds 1 or 2 samples (one played
+  louder and quieter, or separate normal and ghost - see the spec's
+  Sound menu); the format leaves room for more layers. Built-in
   presets are kits shipped with the app; user kits are the same thing
   loaded from files. Synthesized presets (Electro, Hip-hop) are rendered
   into buffers at load, so the engine only ever plays buffers.
@@ -73,7 +77,7 @@ Settled; worth not re-litigating without a new reason.
 ## Android notes
 
 From the step 1 spike (branch `spike/tauri-android`, kept, never
-merged). They constrain steps 4, 5 and 8.
+merged). They constrain steps 4, 5 and 9.
 
 | Finding | Consequence |
 |---|---|
@@ -84,7 +88,7 @@ merged). They constrain steps 4, 5 and 8.
 | The remaining 32 ms is the phone's fast-mixer path: its MediaTek driver refuses MMAP for the speaker | 43 ms is the floor on this phone's speaker; it only matters for live pads, which the spec doesn't have |
 | Output latency is reported per callback (`playback - callback` timestamps) | The playhead and kit highlights subtract it, so they match what's heard on any output, Bluetooth included |
 | Picking a file: the dialog plugin returns a `content://` URI; the fs plugin reads it from Rust | No storage permission needed; no JS file access |
-| Screen off worked without a foreground service on the test phone | Other vendors' battery savers may still stop it - revisit in step 8 (spec Q10) |
+| Screen off worked without a foreground service on the test phone | The spec wants it on by default, with a setting to turn it off. Other vendors' battery savers may still stop it - revisit in step 9 |
 | `tauri android build/dev` symlinks the library into `jniLibs`, which Windows refuses without Developer Mode | Turn on Developer Mode, or copy the `.so` and run `gradlew assembleArm64Debug -x rustBuildArm64Debug` |
 
 ## Roadmap
@@ -93,20 +97,20 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Remote:** the user creates the private GitHub repo and pushes
-   `main` and the spike branch.
-2. **The author's answers** to the spec's open questions may have come
-   in - fold them into docs/spec.md. Step 2's rules need Q1, Q2, Q5,
-   Q6 and Q9.
-3. **Step 2:** split into sub-steps with the user, then start with the
-   model (bars, ticks, instruments, hit kinds) - it needs no answers.
+1. **The author's answers are in the spec** (two rounds, 2026-11-17).
+   One question remains - what double time means - and it blocks only
+   that feel.
+2. **Step 2:** agree the sub-steps with the user, then start with the
+   model (bars, ticks, time signature, instruments, hit kinds) - it
+   needs no answers.
 
 ### 2. `drum-patterns`
 
-Pure, tested. The model (1-4 bars, 48 ticks,
-instruments, hit kinds accent / normal / ghost), then each submenu's
-rules: hi-hat pulses, snare accents and feel, ghost notes simple to
-complex, base and extra kicks, Random. Seeded RNG throughout. Count and
+Pure, tested. The model (1-4 bars, 12 ticks a quarter, a time
+signature, instruments, hit kinds accent / normal / ghost), then each
+submenu's rules: hi-hat pulses, snare accents and feel, ghost notes
+getting harder with each Generate, base and extra kicks, Random (a set
+of N variants stepped through). Seeded RNG throughout. Count and
 konnakol derived from a pattern.
 
 ### 3. `dpg-samples`
@@ -118,7 +122,8 @@ sound late), normalise, mono. The kit format and where kits are stored.
 ### 4. `dpg-hal` and `dpg-engine`
 
 Output backend + mock. Voice pool, per-instrument level, solo, mute,
-drums and metronome buses, metronome subdivisions, bar skip, swapping a
+drums and metronome buses, metronome subdivisions, bar skip, the crash
+counted in bars of playback (once, every 4 bars, every 8...), swapping a
 kit while playing, the play position published for the UI.
 
 ### 5. First real UI
@@ -128,7 +133,9 @@ transport, VexFlow notation, faders, the three instrument submenus.
 The author's prototype ([docs/mockup.html](docs/mockup.html)) is the
 reference for order and colour (dark; hi-hat cyan, snare white, kick
 orange), reflowed for portrait; where it and the spec differ, the spec
-wins.
+wins. Landscape and the orientation button (four orientations, no
+auto-rotate) follow once portrait works; the button needs a small
+Kotlin call (`setRequestedOrientation`).
 
 ### 6. Sounds
 
@@ -143,15 +150,20 @@ The kit photo with per-drum highlights (an image of our own, each
 drum's position known), background colour and texture, tap tempo
 blinking in time.
 
-### 8. Android release
+### 8. Saved grooves and settings
+
+Save a groove and open it again; the Settings menu with "play with
+the screen off".
+
+### 9. Android release
 
 Signing, an install the author can test, then a store listing.
 
-### 9. The looper uses `drum-patterns`
+### 10. The looper uses `drum-patterns`
 
 In looper-pedal's step 14.
 
-### 10. iOS
+### 11. iOS
 
 Needs a Mac and an Apple developer account.
 
@@ -159,6 +171,7 @@ Needs a Mac and an Apple developer account.
 
 - Recording samples inside the app (needs the mic and an input stream -
   the looper knows how).
-- Saving grooves, if the author wants it (spec Q7).
+- Time signatures other than 4/4 - the model allows them from step 2;
+  the rules and the UI come later.
 - Desktop builds - free with Tauri, useful for the looper's users.
 - MIDI export.
