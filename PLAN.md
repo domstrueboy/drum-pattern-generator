@@ -97,8 +97,8 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 2c** (hi-hat pulse), once 2b is reviewed and committed. No
-   spec question is open.
+1. **Step 2d** (snare feel and accents), once 2c is reviewed and
+   committed. No spec question is open.
 
 ### 2. `drum-patterns`
 
@@ -106,9 +106,8 @@ Pure, tested, one commit per sub-step. Randomness through `rand`: every
 generator takes `&mut impl Rng` from the caller. The crash isn't here -
 it follows bars of playback, so it's the engine's (step 4).
 
-Done: 2a (the model) and 2b (count and konnakol).
+Done: 2a (the model), 2b (count and konnakol), 2c (hi-hat pulse).
 
-- **2c. Hi-hat pulse:** the eight pulses -> hits.
 - **2d. Snare feel and accents:** basic / half / double time, 2-4
   accents on 8ths on top.
 - **2e. Kicks:** base kicks (a count, on free 8ths), extra kicks (a
@@ -130,14 +129,17 @@ sound late), normalise, mono. The kit format and where kits are stored.
 
 Output backend + mock. Voice pool, per-instrument level, solo, mute,
 drums and metronome buses, metronome subdivisions, bar skip, the crash
-counted in bars of playback (once, every 4 bars, every 8...), swapping a
-kit while playing, the play position published for the UI.
+counted in bars of playback (once, every 4 bars, every 8...), a dotted
+hi-hat pulse drifting on across loops (`hi_hat_pulse` gains a starting
+offset; the next loop's hi-hat is prepared off the audio thread),
+swapping a kit while playing, the play position published for the UI.
 
 ### 5. First real UI
 
 The whole screen on the phone, plain visuals: bars, metronome,
 transport, VexFlow notation, faders, the three instrument submenus.
-The author's prototype ([docs/mockup.html](docs/mockup.html)) is the
+The notation redraws the hi-hat on each loop while a dotted pulse
+drifts. The author's prototype ([docs/mockup.html](docs/mockup.html)) is the
 reference for order and colour (dark; hi-hat cyan, snare white, kick
 orange), reflowed for portrait; where it and the spec differ, the spec
 wins. Landscape and the orientation button (four orientations, no

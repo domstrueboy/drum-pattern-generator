@@ -125,7 +125,13 @@ the next one.
 ## Hi-hat submenu
 
 - **Pulse:** column 1: 4, 8, 16. Column 2: 4т, 8т, 16т. Column 3: 4., 8.
-  The chosen one is highlighted and the notation changes with it.
+  The chosen one is highlighted and the notation changes with it. A
+  pulse that doesn't divide the bar (4. and 8. in 4/4) runs on across
+  the barline, landing somewhere new in each bar until it lines up
+  again - after 3 bars in 4/4. The drift carries on across loops of
+  the pattern too, counted in bars of playback like the crash, so a
+  1-bar pattern still hears the full cycle. The notation redraws the
+  hi-hat each loop to show what is played.
 - **Random** (see above).
 
 ## Snare submenu
@@ -211,4 +217,4 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-None right now - all were answered on 2026-11-17. New ones go here.
+None right now. New ones go here.
