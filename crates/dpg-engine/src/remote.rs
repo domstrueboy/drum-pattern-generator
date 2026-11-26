@@ -13,6 +13,7 @@ use crate::clock::{BPM_MAX, BPM_MIN};
 use crate::engine::{Garbage, Shared};
 use crate::metronome::Subdivision;
 use crate::mix::MixControls;
+use crate::rules::{BarSkip, CrashRule};
 use crate::tap::TapTempo;
 
 #[cfg(test)]
@@ -49,10 +50,10 @@ impl std::error::Error for WrongRate {}
 pub struct Remote {
     rate: u32,
     shared: Arc<Shared>,
-    patterns: Producer<Pattern>,
+    laps: Producer<Vec<Pattern>>,
     kits: Producer<Kit>,
     garbage: Consumer<Garbage>,
-    pattern: Option<Pattern>,
+    waiting_laps: Option<Vec<Pattern>>,
     kit: Option<Kit>,
     tap: TapTempo,
 }
@@ -61,17 +62,17 @@ impl Remote {
     pub(crate) fn new(
         rate: u32,
         shared: Arc<Shared>,
-        patterns: Producer<Pattern>,
+        laps: Producer<Vec<Pattern>>,
         kits: Producer<Kit>,
         garbage: Consumer<Garbage>,
     ) -> Self {
         Self {
             rate,
             shared,
-            patterns,
+            laps,
             kits,
             garbage,
-            pattern: None,
+            waiting_laps: None,
             kit: None,
             tap: TapTempo::new(),
         }
@@ -144,8 +145,48 @@ impl Remote {
     /// Plays `pattern` from the next block on, at the same place in the
     /// bar.
     pub fn set_pattern(&mut self, pattern: Pattern) {
-        self.pattern = Some(pattern);
+        self.set_laps(vec![pattern]);
+    }
+
+    /// Plays `laps` in turn, one each time through, from the next block
+    /// on: what [`drum_patterns::Groove::build_laps`] makes for a dotted
+    /// hi-hat. Lap `n` of playback is `laps[n % laps.len()]`.
+    ///
+    /// # Panics
+    ///
+    /// If `laps` is empty or they differ in length or time signature.
+    pub fn set_laps(&mut self, laps: Vec<Pattern>) {
+        let first = laps.first().expect("at least one lap");
+        assert!(
+            laps.iter()
+                .all(|l| l.len_ticks() == first.len_ticks() && l.time() == first.time()),
+            "every lap the same length"
+        );
+        self.waiting_laps = Some(laps);
         self.poll();
+    }
+
+    /// Turns bar skip on with a round of bars, or off with `None`. Takes
+    /// effect from the next bar - a round counts from Start.
+    pub fn set_bar_skip(&self, skip: Option<BarSkip>) {
+        self.shared
+            .bar_skip
+            .store(BarSkip::pack(skip), Ordering::Relaxed);
+    }
+
+    /// Bar skip's round, if on.
+    pub fn bar_skip(&self) -> Option<BarSkip> {
+        BarSkip::unpack(self.shared.bar_skip.load(Ordering::Relaxed))
+    }
+
+    /// Where the crash plays.
+    pub fn set_crash(&self, crash: CrashRule) {
+        self.shared.crash.store(crash.pack(), Ordering::Relaxed);
+    }
+
+    /// Where the crash plays.
+    pub fn crash(&self) -> CrashRule {
+        CrashRule::unpack(self.shared.crash.load(Ordering::Relaxed))
     }
 
     /// Plays new hits on `kit` from the next block on; hits still ringing
@@ -171,13 +212,13 @@ impl Remote {
     }
 
     /// Frees what the audio thread handed back and sends what waits.
-    /// Returns how many patterns and kits it freed.
+    /// Returns how many sets of laps and kits it freed.
     pub fn poll(&mut self) -> usize {
         let mut freed = 0;
         while self.garbage.pop().is_ok() {
             freed += 1;
         }
-        send(&mut self.patterns, &mut self.pattern);
+        send(&mut self.laps, &mut self.waiting_laps);
         send(&mut self.kits, &mut self.kit);
         freed
     }

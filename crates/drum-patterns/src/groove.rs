@@ -6,7 +6,7 @@ use rand::SeedableRng;
 use rand::rngs::StdRng;
 
 use crate::ghost_notes::ghost_notes;
-use crate::hi_hat::{hi_hat_pulse, hi_hat_random};
+use crate::hi_hat::{hi_hat_laps, hi_hat_pulse, hi_hat_random};
 use crate::kick::{base_kicks, extra_kicks};
 use crate::pattern::{Pattern, PatternError};
 use crate::snare::{Feel, snare};
@@ -74,6 +74,24 @@ impl Groove {
     /// draws from its own seed, so a part's count only moves the parts
     /// that avoid it.
     pub fn build(&self) -> Result<Pattern, PatternError> {
+        self.build_lap(0)
+    }
+
+    /// The pattern on each time through until the hi-hat lines up with it
+    /// again: one pattern for most grooves, up to three when a dotted
+    /// pulse runs on across loops. They differ only in the hi-hat; the
+    /// first is [`Groove::build`]'s.
+    pub fn build_laps(&self) -> Result<Vec<Pattern>, PatternError> {
+        let first = self.build_lap(0)?;
+        let laps = hi_hat_laps(&first, self.hi_hat);
+        let mut all = vec![first];
+        for lap in 1..laps {
+            all.push(self.build_lap(lap)?);
+        }
+        Ok(all)
+    }
+
+    fn build_lap(&self, lap: u32) -> Result<Pattern, PatternError> {
         let mut pattern = Pattern::new(self.time, self.bars)?;
         let rng = |part: u64| StdRng::seed_from_u64(mix(self.seed, part));
 
@@ -87,8 +105,13 @@ impl Groove {
         );
         ghost_notes(&mut pattern, self.ghosts, self.ghost_level, &mut rng(3));
         match self.hi_hat_random {
-            None => hi_hat_pulse(&mut pattern, self.hi_hat),
-            Some(density) => hi_hat_random(&mut pattern, self.hi_hat, density, &mut rng(4)),
+            None => hi_hat_pulse(&mut pattern, self.hi_hat, lap),
+            // Lap 0 draws from part 4; later laps from seeds past every
+            // part's.
+            Some(density) => {
+                let part = 4 + 8 * u64::from(lap);
+                hi_hat_random(&mut pattern, self.hi_hat, density, lap, &mut rng(part));
+            }
         }
         Ok(pattern)
     }

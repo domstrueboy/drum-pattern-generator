@@ -3,11 +3,12 @@ use std::cell::Cell;
 
 use dpg_hal::MockOutput;
 use dpg_samples::Sound;
-use drum_patterns::Hit;
 use drum_patterns::Instrument::{Crash, HiHat, Kick, Snare};
+use drum_patterns::{Groove, Hit, NoteValue};
 
 use super::*;
 use crate::metronome::Subdivision;
+use crate::rules::{BarSkip, CrashRule};
 use crate::voices::FADE_MS;
 
 const RATE: u32 = 48_000;
@@ -16,15 +17,22 @@ const TICK: usize = 2_000;
 const BAR: usize = 48 * TICK;
 const BLOCK: usize = 256;
 
-/// Every instrument plays `len` frames at its own level, so the output
-/// shows which one sounded: crash 0.1, hi-hat 0.2, snare 0.3, kick 0.4,
-/// times `scale`.
+/// Each drum plays `len` frames at its own level, so the output shows
+/// which one sounded: hi-hat 0.2, snare 0.3, kick 0.4, times `scale`. No
+/// crash, so the crash rule stays out of tests about other things.
 fn kit(len: usize, scale: f32) -> Kit {
     let mut kit = Kit::new(RATE);
-    for (i, instrument) in Instrument::ALL.into_iter().enumerate() {
+    for (i, instrument) in Instrument::ALL.into_iter().enumerate().skip(1) {
         let level = 0.1 * (i + 1) as f32 * scale;
         kit.set(instrument, Sound::new(vec![level; len], None));
     }
+    kit
+}
+
+/// [`kit`] with a crash at 0.1.
+fn kit_with_crash() -> Kit {
+    let mut kit = kit(100, 1.0);
+    kit.set(Crash, Sound::new(vec![0.1; 100], None));
     kit
 }
 
@@ -216,11 +224,11 @@ fn the_position_is_the_tick_being_heard() {
 
 #[test]
 fn plays_on_every_channel_of_an_output() {
-    let (engine, remote) = ready(kit(100, 1.0), pattern(1, &[(0, Crash)]));
+    let (engine, remote) = ready(kit(100, 1.0), pattern(1, &[(0, HiHat)]));
     let mut output = MockOutput::new(RATE, 2, engine);
     remote.play();
     let out = output.pull(BLOCK);
-    assert_eq!((milli(out[0]), milli(out[1])), (100, 100));
+    assert_eq!((milli(out[0]), milli(out[1])), (200, 200));
 }
 
 #[test]
@@ -243,6 +251,83 @@ fn the_metronome_clicks_only_while_playing() {
     };
     assert!(peak(1) < 0.5 * peak(2), "an eighth quieter than a beat");
     assert!(peak(0) > 0.9 * peak(2), "the bar's click as loud as a beat");
+}
+
+#[test]
+fn the_crash_plays_once_as_playing_starts() {
+    let (mut engine, remote) = ready(kit_with_crash(), pattern(1, &[]));
+    remote.play();
+    assert_eq!(onsets(&render(&mut engine, 3 * BAR)), [(0, 100)]);
+}
+
+#[test]
+fn the_crash_can_mark_every_few_bars_of_playback() {
+    // A 2-bar pattern, but the crash counts bars of playback.
+    let (mut engine, remote) = ready(kit_with_crash(), pattern(2, &[]));
+    remote.set_crash(CrashRule::Every(3));
+    remote.play();
+    let crashes = [(0, 100), (3 * BAR, 100), (6 * BAR, 100)];
+    assert_eq!(onsets(&render(&mut engine, 7 * BAR)), crashes);
+}
+
+#[test]
+fn a_crash_in_the_pattern_is_not_doubled() {
+    let (mut engine, remote) = ready(kit_with_crash(), pattern(1, &[(0, Crash)]));
+    remote.play();
+    assert_eq!(onsets(&render(&mut engine, BAR)), [(0, 100)]);
+}
+
+#[test]
+fn bar_skip_silences_the_drums_but_not_the_metronome() {
+    let (mut engine, remote) = ready(kit_with_crash(), pattern(1, &[(24, Kick)]));
+    remote.set_bar_skip(BarSkip::new(1, 2));
+    remote.set_crash(CrashRule::Every(1));
+    remote.play();
+    let drums = [
+        (0, 100),
+        (24 * TICK, 400),
+        (3 * BAR, 100),
+        (3 * BAR + 24 * TICK, 400),
+    ];
+    assert_eq!(onsets(&render(&mut engine, 4 * BAR)), drums);
+
+    remote.set_metronome(true);
+    remote.play();
+    let out = render(&mut engine, 2 * BAR);
+    assert!(
+        out[BAR + 1] != 0.0,
+        "the click on a silent bar's first beat"
+    );
+    let beat = |n: usize| &out[BAR + n * 12 * TICK..][..100];
+    assert_eq!(beat(2), beat(1), "beat 3 is a click alone, no kick");
+}
+
+#[test]
+fn laps_take_turns() {
+    let (mut engine, mut remote) = ready(kit(100, 1.0), pattern(1, &[]));
+    let laps = [Kick, Snare, HiHat].map(|i| pattern(1, &[(0, i)]));
+    remote.set_laps(laps.to_vec());
+    remote.play();
+    let expected = [(0, 400), (BAR, 300), (2 * BAR, 200), (3 * BAR, 400)];
+    assert_eq!(onsets(&render(&mut engine, 4 * BAR)), expected);
+}
+
+#[test]
+fn a_dotted_hi_hat_runs_on_across_loops() {
+    let groove = Groove {
+        hi_hat: NoteValue::DottedEighth,
+        ..Groove::default()
+    };
+    let (mut engine, mut remote) = ready(kit(100, 1.0), pattern(1, &[]));
+    remote.set_laps(groove.build_laps().unwrap());
+    remote.mix().set_solo(Channel::HiHat, true);
+    remote.play();
+    let at: Vec<_> = onsets(&render(&mut engine, 4 * BAR))
+        .into_iter()
+        .map(|(at, _)| at)
+        .collect();
+    let steady: Vec<_> = (0..4 * BAR).step_by(9 * TICK).collect();
+    assert_eq!(at, steady);
 }
 
 #[test]
@@ -274,13 +359,16 @@ fn the_audio_thread_never_allocates_or_frees() {
     remote.play();
     let mut seen = play(&mut engine, 200);
     remote.set_pattern(pattern(2, &[(0, Kick), (60, Snare)]));
-    remote.set_kit(kit(100, 1.0)).unwrap();
+    remote.set_kit(kit_with_crash()).unwrap();
     remote.mix().set_solo(Channel::Snare, true);
+    remote.set_bar_skip(BarSkip::new(2, 1));
+    remote.set_crash(CrashRule::Every(1));
     remote.set_bpm(91.0);
     seen += play(&mut engine, 400);
     // The busy pattern, and the busy kit once its long sounds ended - so
     // handing a kit back was watched too.
     assert_eq!(remote.poll(), 2);
+    remote.set_laps((0..3).map(|n| pattern(1, &[(n * 9, HiHat)])).collect());
     remote.stop();
     seen += play(&mut engine, 100);
     remote.play();

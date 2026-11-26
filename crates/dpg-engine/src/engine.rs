@@ -1,10 +1,10 @@
-//! The audio thread's side: plays the pattern on the clock through the
+//! The audio thread's side: plays the pattern's laps on the clock through the
 //! kit, mixes the voices and publishes where playback is. Patterns and
 //! kits arrive whole through queues, and the ones replaced go back the
 //! same way to be freed off the audio thread.
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU8, AtomicU32, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU8, AtomicU16, AtomicU32, AtomicU64, Ordering};
 
 use dpg_hal::{Block, Render};
 use dpg_samples::Kit;
@@ -15,6 +15,7 @@ use crate::clock::Clock;
 use crate::metronome::{Click, Clicks, Subdivision, click_at};
 use crate::mix::{CHANNELS, Channel, MixControls, gains};
 use crate::remote::Remote;
+use crate::rules::{BarSkip, CrashRule};
 use crate::voices::{SampleId, Trigger, Voices};
 
 #[cfg(test)]
@@ -32,6 +33,8 @@ const IDS_PER_KIT: usize = Instrument::ALL.len() * KINDS.len();
 /// The clicks' ids follow every kit's.
 const FIRST_CLICK: usize = KIT_SLOTS * IDS_PER_KIT;
 const CLICKS: [Click; 3] = [Click::Bar, Click::Beat, Click::Between];
+/// How hard the crash rule hits - by ear in 4g.
+const CRASH_KIND: HitKind = HitKind::Accent;
 
 /// What the UI and the audio thread both see. Atomics only.
 #[derive(Debug)]
@@ -47,13 +50,15 @@ pub(crate) struct Shared {
     pub(crate) metronome: AtomicBool,
     /// A [`Subdivision`]'s index.
     pub(crate) subdivision: AtomicU8,
+    pub(crate) bar_skip: AtomicU16,
+    pub(crate) crash: AtomicU16,
 }
 
 /// What the audio thread hands back to be freed.
 #[derive(Debug)]
 #[expect(dead_code, reason = "held only to be dropped on the UI thread")]
 pub(crate) enum Garbage {
-    Pattern(Pattern),
+    Laps(Vec<Pattern>),
     Kit(Kit),
 }
 
@@ -63,10 +68,12 @@ pub(crate) enum Garbage {
 pub struct Engine {
     rate: u32,
     shared: Arc<Shared>,
-    patterns: Consumer<Pattern>,
+    new_laps: Consumer<Vec<Pattern>>,
     new_kits: Consumer<Kit>,
     garbage: Producer<Garbage>,
-    pattern: Pattern,
+    /// The pattern on each time through, in turn: one, or up to three for
+    /// a dotted hi-hat. Never empty, all the same length.
+    laps: Vec<Pattern>,
     /// `kits[current]` plays new hits; the others ring out.
     kits: [Option<Kit>; KIT_SLOTS],
     current: usize,
@@ -92,6 +99,8 @@ impl Engine {
             mix: MixControls::default(),
             metronome: AtomicBool::new(false),
             subdivision: AtomicU8::new(Subdivision::default().index()),
+            bar_skip: AtomicU16::new(BarSkip::pack(None)),
+            crash: AtomicU16::new(CrashRule::default().pack()),
         });
         let (pattern_tx, pattern_rx) = RingBuffer::new(2);
         let (kit_tx, kit_rx) = RingBuffer::new(2);
@@ -99,10 +108,10 @@ impl Engine {
         let engine = Self {
             rate,
             shared: shared.clone(),
-            patterns: pattern_rx,
+            new_laps: pattern_rx,
             new_kits: kit_rx,
             garbage: garbage_tx,
-            pattern: Pattern::new(time, 1).expect("one bar is in range"),
+            laps: vec![Pattern::new(time, 1).expect("one bar is in range")],
             kits: [Some(Kit::new(rate)), None, None, None],
             current: 0,
             clock: Clock::new(rate, time, DEFAULT_BPM),
@@ -116,19 +125,21 @@ impl Engine {
         (engine, remote)
     }
 
-    /// Swaps in what the UI sent. A new pattern plays at once from the
-    /// same tick; one of another time signature starts its bar over.
+    /// Swaps in the newest of what the UI sent; anything older goes
+    /// straight back. New laps play at once from the same tick; laps of
+    /// another time signature start their bar over.
     fn receive(&mut self) {
-        if self.garbage.slots() > 0
-            && let Ok(pattern) = self.patterns.pop()
+        while self.garbage.slots() > 0
+            && let Ok(laps) = self.new_laps.pop()
         {
-            let old = std::mem::replace(&mut self.pattern, pattern);
-            self.throw(Garbage::Pattern(old));
-            if self.pattern.time() != self.clock.time() {
-                self.clock = Clock::new(self.rate, self.pattern.time(), self.clock.bpm());
-            }
+            let old = std::mem::replace(&mut self.laps, laps);
+            self.throw(Garbage::Laps(old));
         }
-        if let Some(free) = self.kits.iter().position(Option::is_none)
+        let time = self.laps[0].time();
+        if time != self.clock.time() {
+            self.clock = Clock::new(self.rate, time, self.clock.bpm());
+        }
+        while let Some(free) = self.kits.iter().position(Option::is_none)
             && let Ok(kit) = self.new_kits.pop()
         {
             self.kits[free] = Some(kit);
@@ -143,7 +154,7 @@ impl Engine {
         let bpm = f64::from_bits(self.shared.bpm.load(Ordering::Relaxed));
         if play && starts != self.starts {
             self.voices.release_all();
-            self.clock = Clock::new(self.rate, self.pattern.time(), bpm);
+            self.clock = Clock::new(self.rate, self.laps[0].time(), bpm);
             self.playing = true;
         } else if !play && self.playing {
             self.voices.release_all();
@@ -170,16 +181,19 @@ impl Engine {
     }
 
     /// Starts a voice for every hit and click on a tick in the next
-    /// `frames`.
+    /// `frames`. The laps take turns, and bar skip and the crash go by
+    /// the bar of playback.
     fn schedule(&mut self, frames: usize) {
-        let metronome = self
-            .shared
+        let shared = &self.shared;
+        let metronome = shared
             .metronome
             .load(Ordering::Relaxed)
-            .then(|| Subdivision::from_index(self.shared.subdivision.load(Ordering::Relaxed)));
+            .then(|| Subdivision::from_index(shared.subdivision.load(Ordering::Relaxed)));
+        let skip = BarSkip::unpack(shared.bar_skip.load(Ordering::Relaxed));
+        let crash = CrashRule::unpack(shared.crash.load(Ordering::Relaxed));
         let Self {
             clock,
-            pattern,
+            laps,
             kits,
             current,
             voices,
@@ -187,22 +201,41 @@ impl Engine {
             ..
         } = self;
         let time = clock.time();
-        let len = u64::from(pattern.len_ticks());
-        let hits = pattern.hits();
+        let per_bar = u64::from(time.ticks_per_bar());
+        let len = u64::from(laps[0].len_ticks());
         let kit = kits[*current].as_ref();
+        let drum = |instrument: Instrument, kind: HitKind, offset: usize| {
+            let sound = kit?.sound(instrument)?;
+            Some(Trigger {
+                sample: sample_id(*current, instrument, kind),
+                channel: instrument.into(),
+                gain: sound.hit(kind).1,
+                offset,
+            })
+        };
         clock.advance(frames, |t| {
-            let at = (t.tick % len) as u32;
-            let first = hits.partition_point(|h| h.tick < at);
-            for hit in hits[first..].iter().take_while(|h| h.tick == at) {
-                let Some(sound) = kit.and_then(|k| k.sound(hit.instrument)) else {
-                    continue;
-                };
-                voices.trigger(Trigger {
-                    sample: sample_id(*current, hit.instrument, hit.kind),
-                    channel: hit.instrument.into(),
-                    gain: sound.hit(hit.kind).1,
-                    offset: t.offset,
-                });
+            let bar = t.tick / per_bar;
+            if BarSkip::allows(skip, bar) {
+                let lap = &laps[(t.tick / len % laps.len() as u64) as usize];
+                let at = (t.tick % len) as u32;
+                let hits = lap.hits();
+                let on_tick = &hits[hits.partition_point(|h| h.tick < at)..];
+                let on_tick = on_tick.iter().take_while(|h| h.tick == at);
+                let mut crashed = false;
+                for h in on_tick {
+                    crashed |= h.instrument == Instrument::Crash;
+                    if let Some(trigger) = drum(h.instrument, h.kind, t.offset) {
+                        voices.trigger(trigger);
+                    }
+                }
+                // The crash rule adds one unless the pattern has its own.
+                if !crashed
+                    && t.tick % per_bar == 0
+                    && crash.plays(bar)
+                    && let Some(trigger) = drum(Instrument::Crash, CRASH_KIND, t.offset)
+                {
+                    voices.trigger(trigger);
+                }
             }
             if let Some(subdivision) = metronome
                 && let Some(click) = click_at(t.tick, time, subdivision)

@@ -97,8 +97,9 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4f** (bar skip, crash, dotted hi-hat drift), once 4e is
-   reviewed and committed.
+1. **Step 4g** (listen on Windows), once 4f is reviewed and committed.
+2. The spec's two new *Open questions* (the crash in a silent bar, the
+   crash menu's first choice) - for the author.
 
 ### 2. `drum-patterns`
 
@@ -169,14 +170,23 @@ each - by ear in 4g; a subdivision off the tick grid plays beats only;
 `click_at` also tells the UI when Tap tempo blinks. Tap tempo: whole
 BPM from the last 4 gaps; a 2.5 s pause or a 40% change starts afresh).
 
-Open for 4f: the kit highlights. For now the UI can work them out from
-the position and the pattern it sent; bar skip may need the engine to
-say which bars it played.
+4f (playback rules, all counted in bars of playback: `BarSkip` silences
+the drums and the crash, never the metronome; `CrashRule` adds a crash
+on a bar's first beat unless the pattern has one there; a dotted
+hi-hat runs on across loops - `Groove::build_laps` builds each lap until
+it lines up again, at most 3, and the engine plays them in turn. The
+engine now takes the newest of several queued patterns at once, so the
+first tick never plays a stale one).
 
-- **4f. Playback rules:** bar skip, the crash every K bars of playback,
-  the dotted hi-hat drifting across loops.
+Kit highlights: the UI works them out from the position, the laps it
+sent, `BarSkip` and `CrashRule` - the same pure rules the engine plays
+by. For step 5: Random's variants on a dotted pulse need a seed per lap
+(`Groove` uses part `4 + 8 * lap`).
+
 - **4g. Listen on Windows:** a command-line player with the local kit,
-  to judge the ghost level and the -4 / -14 dB defaults by ear.
+  to judge by ear: the ghost level, the -4 / -14 dB defaults, the
+  metronome's pitches and its -8 dB subdivisions, the crash as an
+  accent.
 
 ### 5. First real UI
 

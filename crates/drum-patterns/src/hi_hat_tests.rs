@@ -3,7 +3,7 @@ use crate::time::TimeSignature;
 
 fn pulsed(time: TimeSignature, bars: u8, pulse: NoteValue) -> Pattern {
     let mut p = Pattern::new(time, bars).unwrap();
-    hi_hat_pulse(&mut p, pulse);
+    hi_hat_pulse(&mut p, pulse, 0);
     p
 }
 
@@ -52,6 +52,44 @@ fn dotted_pulses_line_up_again_after_three_bars() {
 }
 
 #[test]
+fn a_dotted_pulse_runs_on_across_loops() {
+    // One bar of dotted 8ths, three times through: the pulse never stops.
+    let mut heard = Vec::new();
+    for lap in 0..3 {
+        let mut p = Pattern::new(TimeSignature::FOUR_FOUR, 1).unwrap();
+        hi_hat_pulse(&mut p, NoteValue::DottedEighth, lap);
+        heard.extend(hat_ticks(&p).into_iter().map(|t| t + 48 * lap));
+    }
+    let steady: Vec<u32> = (0..144).step_by(9).collect();
+    assert_eq!(heard, steady);
+}
+
+#[test]
+fn a_pulse_lines_up_with_the_pattern_after_its_laps() {
+    use NoteValue::*;
+    let p = |bars| Pattern::new(TimeSignature::FOUR_FOUR, bars).unwrap();
+    for (bars, pulse, laps) in [
+        (1, Eighth, 1),
+        (1, SixteenthTriplet, 1),
+        (1, DottedEighth, 3),
+        (2, DottedQuarter, 3),
+        (3, DottedEighth, 1),
+        (4, DottedEighth, 3),
+    ] {
+        assert_eq!(
+            hi_hat_laps(&p(bars), pulse),
+            laps,
+            "{bars} bars of {pulse:?}"
+        );
+        let mut first = p(bars);
+        let mut again = p(bars);
+        hi_hat_pulse(&mut first, pulse, 0);
+        hi_hat_pulse(&mut again, pulse, laps);
+        assert_eq!(first, again);
+    }
+}
+
+#[test]
 fn even_pulses_look_the_same_in_every_bar() {
     let p = pulsed(TimeSignature::FOUR_FOUR, 2, NoteValue::EighthTriplet);
     let ticks = hat_ticks(&p);
@@ -76,7 +114,7 @@ fn a_new_pulse_replaces_the_old_hi_hat_only() {
     p.set(Hit::new(12, Instrument::Snare, HitKind::Normal))
         .unwrap();
 
-    hi_hat_pulse(&mut p, NoteValue::Quarter);
+    hi_hat_pulse(&mut p, NoteValue::Quarter, 0);
 
     assert_eq!(hat_ticks(&p), [0, 12, 24, 36]);
     assert!(p.get(12, Instrument::Snare).is_some());
@@ -99,7 +137,7 @@ mod random {
 
     fn random_hats(bars: u8, pulse: NoteValue, density: u8, seed: u64) -> Pattern {
         let mut p = Pattern::new(TimeSignature::FOUR_FOUR, bars).unwrap();
-        hi_hat_random(&mut p, pulse, density, &mut StdRng::seed_from_u64(seed));
+        hi_hat_random(&mut p, pulse, density, 0, &mut StdRng::seed_from_u64(seed));
         p
     }
 
@@ -137,6 +175,22 @@ mod random {
     }
 
     #[test]
+    fn each_lap_is_random_on_its_own_grid() {
+        let pulse = NoteValue::DottedEighth;
+        for lap in 0..3 {
+            let mut grid = Pattern::new(TimeSignature::FOUR_FOUR, 1).unwrap();
+            hi_hat_pulse(&mut grid, pulse, lap);
+            let mut p = Pattern::new(TimeSignature::FOUR_FOUR, 1).unwrap();
+            hi_hat_random(&mut p, pulse, 0, lap, &mut StdRng::seed_from_u64(3));
+            let on_grid = hat_ticks(&grid);
+            let hats = hat_ticks(&p);
+            assert!(hats.iter().all(|t| on_grid.contains(t)), "lap {lap}");
+            let beats: Vec<_> = on_grid.into_iter().filter(|t| t % 12 == 0).collect();
+            assert!(beats.iter().all(|t| hats.contains(t)), "lap {lap}");
+        }
+    }
+
+    #[test]
     fn no_bar_is_left_empty() {
         for pulse in NoteValue::ALL {
             for seed in 0..50 {
@@ -156,6 +210,7 @@ mod random {
         hi_hat_random(
             &mut p,
             NoteValue::DottedQuarter,
+            0,
             0,
             &mut StdRng::seed_from_u64(1),
         );
@@ -190,7 +245,7 @@ mod random {
         let build = |index: u8| {
             let mut p = Pattern::new(TimeSignature::FOUR_FOUR, 1).unwrap();
             let rng = &mut v.rng::<StdRng>(index);
-            hi_hat_random(&mut p, NoteValue::Sixteenth, HI_HAT_DENSITY, rng);
+            hi_hat_random(&mut p, NoteValue::Sixteenth, HI_HAT_DENSITY, 0, rng);
             hat_ticks(&p)
         };
         let all: HashSet<Vec<u32>> = (0..6).map(build).collect();
@@ -203,7 +258,13 @@ mod random {
         let mut p = random_hats(1, NoteValue::Sixteenth, 100, 1);
         p.set(Hit::new(12, Instrument::Snare, HitKind::Normal))
             .unwrap();
-        hi_hat_random(&mut p, NoteValue::Quarter, 0, &mut StdRng::seed_from_u64(2));
+        hi_hat_random(
+            &mut p,
+            NoteValue::Quarter,
+            0,
+            0,
+            &mut StdRng::seed_from_u64(2),
+        );
         assert_eq!(hat_ticks(&p), [0, 12, 24, 36]);
         assert!(p.get(12, Instrument::Snare).is_some());
     }

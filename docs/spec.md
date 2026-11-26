@@ -248,4 +248,10 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-None right now.
+1. **The crash in a silent bar.** With Bar skip on, when the crash's
+   bar falls in the silent part, is the crash silent too? For now yes:
+   Bar skip silences every drum, the crash included; only the metronome
+   keeps going.
+2. **The crash menu's first choice.** The menu lists "once at the start",
+   "every квадрат", "every 2 квадрата" - is there also "never"? For now
+   there isn't, and "once at the start" is the default.

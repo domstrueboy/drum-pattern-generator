@@ -119,3 +119,36 @@ fn bars_out_of_range_are_an_error() {
     };
     assert_eq!(g.build(), Err(PatternError::BarsOutOfRange(0)));
 }
+
+#[test]
+fn most_grooves_are_one_lap() {
+    let groove = busy();
+    assert_eq!(groove.build_laps().unwrap(), [groove.build().unwrap()]);
+}
+
+#[test]
+fn a_dotted_hi_hat_takes_three_laps_differing_in_the_hi_hat_only() {
+    for hi_hat_random in [None, Some(50)] {
+        let groove = Groove {
+            bars: 1,
+            hi_hat: NoteValue::DottedEighth,
+            hi_hat_random,
+            ..busy()
+        };
+        let laps = groove.build_laps().unwrap();
+        assert_eq!(laps.len(), 3);
+        assert_eq!(laps[0], groove.build().unwrap());
+        for lap in &laps[1..] {
+            assert_ne!(
+                ticks(lap, Instrument::HiHat),
+                ticks(&laps[0], Instrument::HiHat)
+            );
+            for other in [Instrument::Snare, Instrument::Kick] {
+                assert_eq!(
+                    lap.hits_of(other).collect::<Vec<_>>(),
+                    laps[0].hits_of(other).collect::<Vec<_>>()
+                );
+            }
+        }
+    }
+}
