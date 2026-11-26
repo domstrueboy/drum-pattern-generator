@@ -10,3 +10,6 @@ workspace = true
 
 [dependencies]
 drum-patterns = { path = "../drum-patterns" }
+dpg-samples = { path = "../dpg-samples" }
+dpg-hal = { path = "../dpg-hal", default-features = false }
+rtrb = "0.4.1"

@@ -97,7 +97,8 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4d** (playing a groove), once 4c is reviewed and committed.
+1. **Step 4e** (metronome and tap tempo), once 4d is reviewed and
+   committed.
 
 ### 2. `drum-patterns`
 
@@ -138,8 +139,8 @@ one - judge by ear in step 4 whether that is too quiet on a phone.
 UI -> audio: atomics for continuous values (faders, BPM, mute, solo);
 a pattern or a kit is built whole off the audio thread, sent through an
 rtrb queue, swapped in, and the old one sent back to be freed. Voices
-still ringing on a replaced kit finish on it first. The position and
-the hits (for the kit highlights) come back as atomics.
+still ringing on a replaced kit finish on it first. The position comes
+back as an atomic.
 
 Decided: a new pattern plays at once, from the same place in the bar;
 metronome - bar's first beat a higher click, beats normal, subdivisions
@@ -155,11 +156,18 @@ time signature's beat), 4c (`Voices`: 32 plus 8 fading, the oldest
 fades out in 5 ms when full, Stop fades all and drops hits not started;
 voices hold a `SampleId`, never a sample. `MixControls`: atomics for
 levels, solo, mute, Drums; squared fader taper; gains slide across a
-block. Defaults: drum faders full, Drums and Metronome at 0.8).
+block. Defaults: drum faders full, Drums and Metronome at 0.8), 4d
+(`Engine` plays on the clock and `Remote` drives it: Start always
+starts from the top; the newest pattern or kit wins, one not taken yet
+waits in the remote; up to 4 kits held while old ones ring out; the
+position is the tick being heard, latency taken off; a counting
+allocator fails a test if the audio thread allocates or frees. Tempo
+starts at 120 - the spec has no default).
 
-- **4d. Playing a groove:** start / stop, pattern and kit swaps while
-  playing, the position published. Offline render tests; a test fails
-  if the audio thread allocates.
+Open for 4f: the kit highlights. For now the UI can work them out from
+the position and the pattern it sent; bar skip may need the engine to
+say which bars it played.
+
 - **4e. Metronome:** 1-4 clicks a beat (4 / 8 / 8т / 16), one generated
   click for now (five sounds in step 6); tap tempo.
 - **4f. Playback rules:** bar skip, the crash every K bars of playback,
