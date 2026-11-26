@@ -99,8 +99,6 @@ Ordered. One step at a time, each a commit.
 
 1. **Step 4f** (bar skip, crash, dotted hi-hat drift), once 4e is
    reviewed and committed.
-2. Ask the author the spec's two *Open questions* (metronome without
-   Start, starting values).
 
 ### 2. `drum-patterns`
 
@@ -164,7 +162,7 @@ starts from the top; the newest pattern or kit wins, one not taken yet
 waits in the remote; up to 4 kits held while old ones ring out; the
 position is the tick being heard, latency taken off; a counting
 allocator fails a test if the audio thread allocates or frees. Tempo
-starts at 120 - the spec has no default), 4e (metronome: clicks on
+starts at 120), 4e (metronome: clicks on
 playback ticks, so they keep going through bar skip; a 2 kHz click on
 the bar's first beat, 1 kHz on the others, subdivisions 8 dB down, 40 ms
 each - by ear in 4g; a subdivision off the tick grid plays beats only;

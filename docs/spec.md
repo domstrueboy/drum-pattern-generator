@@ -85,6 +85,10 @@ holds every value the spec asks for. 4/4 first; other time signatures
 ## Metronome
 
 - Off: grey, labelled **Metronome**. On: yellow, label still readable.
+- It clicks only while playing, together with the pattern - never
+  without Start.
+- First launch: 120 BPM, metronome off, subdivision 4. Later launches
+  start where the last one left off.
 - BPM changes by 1.
 - Subdivision: **4 / 8 / 8т / 16** = one, two, three or four clicks a beat.
 - Sound button cycles through 5 sounds: click; Ableton-style click;
@@ -244,9 +248,4 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-1. **Metronome without Start.** Does the metronome click when the
-   pattern isn't playing - Metronome on, Start not pressed? For now it
-   clicks only while playing, together with the pattern.
-2. **Starting values.** On the first launch: what BPM (for now 120), is
-   the metronome on or off (for now off), and which subdivision (for now
-   4)? Later launches will remember the last ones.
+None right now.
