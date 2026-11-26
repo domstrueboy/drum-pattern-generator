@@ -208,6 +208,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "dpg-engine"
+version = "0.1.0"
+dependencies = [
+ "drum-patterns",
+]
+
+[[package]]
 name = "dpg-hal"
 version = "0.1.0"
 dependencies = [

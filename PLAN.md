@@ -97,7 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4b** (clock), once 4a is reviewed and committed.
+1. **Step 4c** (voices and mixer), once 4b is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -148,10 +148,11 @@ quieter; a solo silences the crash; BPM 30-300.
 Done: 4a (`dpg-hal`: `CpalOutput` opens the default output - fixed 256
 frames on Android, `realtime`, any format to `f32` - clips once on the
 way out, flags a lost device; `MockOutput` for tests; the `cpal`
-feature is off for crates that only need the trait).
+feature is off for crates that only need the trait), 4b (`Clock`:
+each tick rounded from an exact anchor, played exactly once whatever
+the block sizes; a tempo change carries the beat on; BPM counts the
+time signature's beat).
 
-- **4b. Clock:** frames <-> ticks at a tempo, each event rounded from its
-  exact place; a BPM change keeps the beat; bars of playback counted.
 - **4c. Voices and mixer:** 32 voices, the oldest cut with a short fade
   when full; per-instrument level / solo / mute; Drums and Metronome
   faders.

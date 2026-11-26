@@ -1,0 +1,12 @@
+[package]
+name = "dpg-engine"
+version = "0.1.0"
+description = "Plays grooves: clock, voices, mixer, metronome, playback rules - no device"
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+drum-patterns = { path = "../drum-patterns" }
