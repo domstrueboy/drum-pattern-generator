@@ -4,7 +4,7 @@
 //! same way to be freed off the audio thread.
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU8, AtomicU32, AtomicU64, Ordering};
 
 use dpg_hal::{Block, Render};
 use dpg_samples::Kit;
@@ -12,6 +12,7 @@ use drum_patterns::{HitKind, Instrument, Pattern, TimeSignature};
 use rtrb::{Consumer, Producer, RingBuffer};
 
 use crate::clock::Clock;
+use crate::metronome::{Click, Clicks, Subdivision, click_at};
 use crate::mix::{CHANNELS, Channel, MixControls, gains};
 use crate::remote::Remote;
 use crate::voices::{SampleId, Trigger, Voices};
@@ -28,6 +29,9 @@ pub const DEFAULT_BPM: f64 = 120.0;
 const KIT_SLOTS: usize = 4;
 const KINDS: [HitKind; 3] = [HitKind::Accent, HitKind::Normal, HitKind::Ghost];
 const IDS_PER_KIT: usize = Instrument::ALL.len() * KINDS.len();
+/// The clicks' ids follow every kit's.
+const FIRST_CLICK: usize = KIT_SLOTS * IDS_PER_KIT;
+const CLICKS: [Click; 3] = [Click::Bar, Click::Beat, Click::Between];
 
 /// What the UI and the audio thread both see. Atomics only.
 #[derive(Debug)]
@@ -40,6 +44,9 @@ pub(crate) struct Shared {
     /// The tick being heard, as `f64` bits; NaN when stopped.
     pub(crate) position: AtomicU64,
     pub(crate) mix: MixControls,
+    pub(crate) metronome: AtomicBool,
+    /// A [`Subdivision`]'s index.
+    pub(crate) subdivision: AtomicU8,
 }
 
 /// What the audio thread hands back to be freed.
@@ -67,6 +74,7 @@ pub struct Engine {
     playing: bool,
     starts: u32,
     voices: Voices,
+    clicks: Clicks,
     /// The gains the last block ended on; none before the first.
     gains: Option<[f32; CHANNELS]>,
 }
@@ -82,6 +90,8 @@ impl Engine {
             bpm: AtomicU64::new(DEFAULT_BPM.to_bits()),
             position: AtomicU64::new(f64::NAN.to_bits()),
             mix: MixControls::default(),
+            metronome: AtomicBool::new(false),
+            subdivision: AtomicU8::new(Subdivision::default().index()),
         });
         let (pattern_tx, pattern_rx) = RingBuffer::new(2);
         let (kit_tx, kit_rx) = RingBuffer::new(2);
@@ -99,6 +109,7 @@ impl Engine {
             playing: false,
             starts: 0,
             voices: Voices::new(rate),
+            clicks: Clicks::new(rate),
             gains: None,
         };
         let remote = Remote::new(rate, shared, pattern_tx, kit_tx, garbage_rx);
@@ -158,16 +169,24 @@ impl Engine {
             .store(heard.to_bits(), Ordering::Relaxed);
     }
 
-    /// Starts a voice for every hit on a tick in the next `frames`.
+    /// Starts a voice for every hit and click on a tick in the next
+    /// `frames`.
     fn schedule(&mut self, frames: usize) {
+        let metronome = self
+            .shared
+            .metronome
+            .load(Ordering::Relaxed)
+            .then(|| Subdivision::from_index(self.shared.subdivision.load(Ordering::Relaxed)));
         let Self {
             clock,
             pattern,
             kits,
             current,
             voices,
+            clicks,
             ..
         } = self;
+        let time = clock.time();
         let len = u64::from(pattern.len_ticks());
         let hits = pattern.hits();
         let kit = kits[*current].as_ref();
@@ -182,6 +201,16 @@ impl Engine {
                     sample: sample_id(*current, hit.instrument, hit.kind),
                     channel: hit.instrument.into(),
                     gain: sound.hit(hit.kind).1,
+                    offset: t.offset,
+                });
+            }
+            if let Some(subdivision) = metronome
+                && let Some(click) = click_at(t.tick, time, subdivision)
+            {
+                voices.trigger(Trigger {
+                    sample: click_id(click),
+                    channel: Channel::Metronome,
+                    gain: clicks.sound(click).1,
                     offset: t.offset,
                 });
             }
@@ -224,9 +253,11 @@ impl Render for Engine {
         let to = gains(&self.shared.mix.snapshot());
         let from = self.gains.unwrap_or(to);
         self.gains = Some(to);
-        let kits = &self.kits;
+        let (kits, clicks) = (&self.kits, &self.clicks);
         self.voices
-            .mix(block.out, block.channels, &from, &to, |id| lookup(kits, id));
+            .mix(block.out, block.channels, &from, &to, |id| {
+                lookup(kits, clicks, id)
+            });
         self.retire();
     }
 }
@@ -242,12 +273,24 @@ fn sample_id(slot: usize, instrument: Instrument, kind: HitKind) -> SampleId {
     SampleId((slot * IDS_PER_KIT + instrument * KINDS.len() + kind) as u32)
 }
 
+fn click_id(click: Click) -> SampleId {
+    let index = CLICKS
+        .iter()
+        .position(|&c| c == click)
+        .expect("CLICKS lists every click");
+    SampleId((FIRST_CLICK + index) as u32)
+}
+
+/// The kit slot `id` plays from; past the last for a click.
 fn slot_of(id: SampleId) -> usize {
     id.0 as usize / IDS_PER_KIT
 }
 
 /// The samples behind `id`; empty if its kit or sound is gone.
-fn lookup(kits: &[Option<Kit>; KIT_SLOTS], id: SampleId) -> &[f32] {
+fn lookup<'a>(kits: &'a [Option<Kit>; KIT_SLOTS], clicks: &'a Clicks, id: SampleId) -> &'a [f32] {
+    if let Some(&click) = CLICKS.get((id.0 as usize).wrapping_sub(FIRST_CLICK)) {
+        return clicks.sound(click).0;
+    }
     let n = id.0 as usize % IDS_PER_KIT;
     let (instrument, kind) = (Instrument::ALL[n / KINDS.len()], KINDS[n % KINDS.len()]);
     kits.get(slot_of(id))

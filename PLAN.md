@@ -97,8 +97,10 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4e** (metronome and tap tempo), once 4d is reviewed and
-   committed.
+1. **Step 4f** (bar skip, crash, dotted hi-hat drift), once 4e is
+   reviewed and committed.
+2. Ask the author the spec's two *Open questions* (metronome without
+   Start, starting values).
 
 ### 2. `drum-patterns`
 
@@ -162,14 +164,17 @@ starts from the top; the newest pattern or kit wins, one not taken yet
 waits in the remote; up to 4 kits held while old ones ring out; the
 position is the tick being heard, latency taken off; a counting
 allocator fails a test if the audio thread allocates or frees. Tempo
-starts at 120 - the spec has no default).
+starts at 120 - the spec has no default), 4e (metronome: clicks on
+playback ticks, so they keep going through bar skip; a 2 kHz click on
+the bar's first beat, 1 kHz on the others, subdivisions 8 dB down, 40 ms
+each - by ear in 4g; a subdivision off the tick grid plays beats only;
+`click_at` also tells the UI when Tap tempo blinks. Tap tempo: whole
+BPM from the last 4 gaps; a 2.5 s pause or a 40% change starts afresh).
 
 Open for 4f: the kit highlights. For now the UI can work them out from
 the position and the pattern it sent; bar skip may need the engine to
 say which bars it played.
 
-- **4e. Metronome:** 1-4 clicks a beat (4 / 8 / 8т / 16), one generated
-  click for now (five sounds in step 6); tap tempo.
 - **4f. Playback rules:** bar skip, the crash every K bars of playback,
   the dotted hi-hat drifting across loops.
 - **4g. Listen on Windows:** a command-line player with the local kit,

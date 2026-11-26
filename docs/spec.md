@@ -244,4 +244,9 @@ plays, as in EZdrummer or Addictive Drums.
 
 For the author. Answers replace the question with the rule.
 
-None right now.
+1. **Metronome without Start.** Does the metronome click when the
+   pattern isn't playing - Metronome on, Start not pressed? For now it
+   clicks only while playing, together with the pattern.
+2. **Starting values.** On the first launch: what BPM (for now 120), is
+   the metronome on or off (for now off), and which subdivision (for now
+   4)? Later launches will remember the last ones.

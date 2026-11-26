@@ -11,7 +11,9 @@ use rtrb::{Consumer, Producer, PushError};
 
 use crate::clock::{BPM_MAX, BPM_MIN};
 use crate::engine::{Garbage, Shared};
+use crate::metronome::Subdivision;
 use crate::mix::MixControls;
+use crate::tap::TapTempo;
 
 #[cfg(test)]
 #[path = "remote_tests.rs"]
@@ -52,6 +54,7 @@ pub struct Remote {
     garbage: Consumer<Garbage>,
     pattern: Option<Pattern>,
     kit: Option<Kit>,
+    tap: TapTempo,
 }
 
 impl Remote {
@@ -70,6 +73,7 @@ impl Remote {
             garbage,
             pattern: None,
             kit: None,
+            tap: TapTempo::new(),
         }
     }
 
@@ -100,6 +104,36 @@ impl Remote {
     /// The tempo, in beats a minute.
     pub fn bpm(&self) -> f64 {
         f64::from_bits(self.shared.bpm.load(Ordering::Relaxed))
+    }
+
+    /// A tap of Tap tempo at `seconds` on any steady clock. From the
+    /// second tap on, sets the tempo and returns it.
+    pub fn tap(&mut self, seconds: f64) -> Option<f64> {
+        let bpm = self.tap.tap(seconds)?;
+        self.set_bpm(bpm);
+        Some(bpm)
+    }
+
+    /// Turns the metronome on or off. It clicks while playing.
+    pub fn set_metronome(&self, on: bool) {
+        self.shared.metronome.store(on, Ordering::Relaxed);
+    }
+
+    /// Whether the metronome is on.
+    pub fn metronome(&self) -> bool {
+        self.shared.metronome.load(Ordering::Relaxed)
+    }
+
+    /// How many clicks a beat.
+    pub fn set_subdivision(&self, subdivision: Subdivision) {
+        self.shared
+            .subdivision
+            .store(subdivision.index(), Ordering::Relaxed);
+    }
+
+    /// The clicks a beat.
+    pub fn subdivision(&self) -> Subdivision {
+        Subdivision::from_index(self.shared.subdivision.load(Ordering::Relaxed))
     }
 
     /// The mixer's faders, solo and mute.

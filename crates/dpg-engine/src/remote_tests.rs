@@ -33,3 +33,22 @@ fn start_and_stop_are_remembered() {
     assert!(!remote.is_playing());
     assert_eq!(remote.position(), None, "nothing rendered yet");
 }
+
+#[test]
+fn tap_tempo_sets_the_tempo() {
+    let (_engine, mut remote) = Engine::new(48_000);
+    assert_eq!(remote.tap(0.0), None);
+    assert_eq!(remote.tap(0.6), Some(100.0));
+    assert_eq!(remote.bpm(), 100.0);
+}
+
+#[test]
+fn the_metronome_starts_off_on_quarters() {
+    let (_engine, remote) = Engine::new(48_000);
+    assert!(!remote.metronome());
+    assert_eq!(remote.subdivision(), Subdivision::Quarter);
+    remote.set_metronome(true);
+    remote.set_subdivision(Subdivision::Triplet);
+    assert!(remote.metronome());
+    assert_eq!(remote.subdivision(), Subdivision::Triplet);
+}

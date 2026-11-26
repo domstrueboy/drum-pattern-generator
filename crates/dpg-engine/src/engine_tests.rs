@@ -7,6 +7,7 @@ use drum_patterns::Hit;
 use drum_patterns::Instrument::{Crash, HiHat, Kick, Snare};
 
 use super::*;
+use crate::metronome::Subdivision;
 use crate::voices::FADE_MS;
 
 const RATE: u32 = 48_000;
@@ -223,6 +224,28 @@ fn plays_on_every_channel_of_an_output() {
 }
 
 #[test]
+fn the_metronome_clicks_only_while_playing() {
+    let (mut engine, remote) = ready(kit(100, 1.0), pattern(1, &[]));
+    remote.set_metronome(true);
+    remote.set_subdivision(Subdivision::Eighth);
+    assert!(render(&mut engine, BAR).iter().all(|&s| s == 0.0));
+
+    remote.play();
+    let out = render(&mut engine, BAR);
+    // A click is a sine from zero: heard from its second frame.
+    let at: Vec<_> = onsets(&out).into_iter().map(|(at, _)| at - 1).collect();
+    let eighths: Vec<_> = (0..8).map(|n| n * 6 * TICK).collect();
+    assert_eq!(at, eighths);
+
+    let peak = |n: usize| {
+        let click = &out[n * 6 * TICK..][..6 * TICK];
+        click.iter().fold(0f32, |m, s| m.max(s.abs()))
+    };
+    assert!(peak(1) < 0.5 * peak(2), "an eighth quieter than a beat");
+    assert!(peak(0) > 0.9 * peak(2), "the bar's click as loud as a beat");
+}
+
+#[test]
 fn the_audio_thread_never_allocates_or_frees() {
     // A 16th on every instrument at 300 BPM with long sounds: the pool
     // fills and steals.
@@ -232,6 +255,8 @@ fn the_audio_thread_never_allocates_or_frees() {
         .collect();
     let (mut engine, mut remote) = ready(kit(BAR, 0.1), pattern(1, &busy));
     remote.set_bpm(300.0);
+    remote.set_metronome(true);
+    remote.set_subdivision(Subdivision::Sixteenth);
     let mut out = vec![0.0; BLOCK];
     let mut play = |engine: &mut Engine, blocks: usize| {
         allocations(|| {
