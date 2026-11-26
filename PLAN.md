@@ -97,7 +97,7 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4c** (voices and mixer), once 4b is reviewed and committed.
+1. **Step 4d** (playing a groove), once 4c is reviewed and committed.
 
 ### 2. `drum-patterns`
 
@@ -151,11 +151,12 @@ way out, flags a lost device; `MockOutput` for tests; the `cpal`
 feature is off for crates that only need the trait), 4b (`Clock`:
 each tick rounded from an exact anchor, played exactly once whatever
 the block sizes; a tempo change carries the beat on; BPM counts the
-time signature's beat).
+time signature's beat), 4c (`Voices`: 32 plus 8 fading, the oldest
+fades out in 5 ms when full, Stop fades all and drops hits not started;
+voices hold a `SampleId`, never a sample. `MixControls`: atomics for
+levels, solo, mute, Drums; squared fader taper; gains slide across a
+block. Defaults: drum faders full, Drums and Metronome at 0.8).
 
-- **4c. Voices and mixer:** 32 voices, the oldest cut with a short fade
-  when full; per-instrument level / solo / mute; Drums and Metronome
-  faders.
 - **4d. Playing a groove:** start / stop, pattern and kit swaps while
   playing, the position published. Offline render tests; a test fails
   if the audio thread allocates.
