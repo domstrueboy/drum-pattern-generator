@@ -8,6 +8,7 @@ use rand::rngs::StdRng;
 use serde::{Deserialize, Serialize};
 
 use crate::command::{Command, Fader};
+use crate::notation::notation;
 use crate::parts::Parts;
 use crate::snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, MixerView, Snapshot, SnareView,
@@ -221,6 +222,7 @@ impl Session {
                         .collect()
                 })
                 .collect(),
+            notation: self.laps.iter().map(notation).collect(),
         }
     }
 

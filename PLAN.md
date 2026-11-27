@@ -97,10 +97,11 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. The spec's *Open questions* 1-5 - for the author: the crash in a
+1. The spec's *Open questions* 1-6 - for the author: the crash in a
    silent bar, the crash menu's first choice, getting back to easy
-   ghost notes, hearing other accents, Random's starting count.
-2. **Step 5c** (notation spelling).
+   ghost notes, hearing other accents, Random's starting count, the
+   note-value row.
+2. **Step 5d** (the portrait screen).
 
 ### 2. `drum-patterns`
 
@@ -232,7 +233,13 @@ of N, Generate draws a new set. Commands and the snapshot are serde
 types; the shell has one `send` command. `app/src/session.ts` mirrors
 them by hand. A lost output - a phone call took it - is opened again on
 the next refresh; `Session::reconnect` carries every setting over,
-stopped).
+stopped), 5c (`notation`: each beat on the coarsest grid holding its
+notes - 16ths, 8th triplets (3:2), 16th triplets (6:4), and 12:8 32nds
+for 16ths and 8th triplets together; two beats holding only
+quarter-triplet notes share one bracket. A note lasts to the next one
+inside its beat, rests split where the beat divides, nothing is tied
+across beats - a dotted pulse is written beat by beat. The snapshot
+carries one `Notation` a lap).
 
 ### 6. Sounds
 

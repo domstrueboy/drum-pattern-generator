@@ -4,6 +4,7 @@
 use serde::Serialize;
 
 use crate::names::{FeelName, InstrumentName, KindName, PulseName, SubdivisionName};
+use crate::notation::Notation;
 use crate::session::View;
 
 /// The whole screen's state.
@@ -41,6 +42,8 @@ pub struct Snapshot {
     /// The pattern on each time through: one lap for most grooves, up to
     /// three while a dotted hi-hat drifts.
     pub laps: Vec<Vec<HitView>>,
+    /// Each lap spelled as notation, ready to draw.
+    pub notation: Vec<Notation>,
 }
 
 /// Bar skip's choice.

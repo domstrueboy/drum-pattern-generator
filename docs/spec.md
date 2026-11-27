@@ -263,3 +263,6 @@ For the author. Answers replace the question with the rule.
    count again places the accents afresh.
 5. **Random's count to start with.** N runs from 1 to 24; for now it
    starts at 4.
+6. **The note-value row.** Is it a value over each note (`16`, `8.`,
+   `8t`), or one over each group of notes? For now one over each note,
+   only where there's a note - like the konnakol.

@@ -45,6 +45,34 @@ export interface Hit {
   kind: Kind;
 }
 
+/** A note or a rest, spelled in Rust (crates/dpg-session/src/notation.rs). */
+export interface NoteEvent {
+  tick: number;
+  ticks: number;
+  /** 4 a quarter, 8 an 8th, 16 a 16th... */
+  value: number;
+  dots: number;
+  rest: boolean;
+  /** The note-value row: "16", "8.", "8t" - notes only. */
+  label: string | null;
+  hits: { instrument: Instrument; kind: Kind }[];
+  /** "т" or "к" - notes only. */
+  konnakol: string | null;
+}
+
+/** A beat, or two under a quarter-triplet bracket, beamed together. */
+export interface NoteGroup {
+  tick: number;
+  ticks: number;
+  tuplet: { notes: number; occupied: number } | null;
+  events: NoteEvent[];
+}
+
+export interface Notation {
+  count: { tick: number; label: string }[];
+  bars: NoteGroup[][];
+}
+
 export interface ChannelState {
   level: number;
   solo: boolean;
@@ -93,4 +121,5 @@ export interface Snapshot {
   ticksPerBeat?: number;
   ticksPerBar?: number;
   laps?: Hit[][];
+  notation?: Notation[];
 }

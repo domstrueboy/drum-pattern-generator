@@ -223,6 +223,22 @@ fn the_snapshot_reads_as_the_ui_expects() {
     assert_eq!(json["ticksPerBar"], 48);
     assert_eq!(json["crashEvery"], serde_json::Value::Null);
     assert_eq!(json["laps"][0][0]["instrument"], "hiHat");
+    let first = &json["notation"][0]["bars"][0][0];
+    assert_eq!(first["events"][0]["label"], "8");
+    assert_eq!(first["tuplet"], serde_json::Value::Null);
+}
+
+#[test]
+fn each_lap_is_spelled() {
+    let (mut session, _engine) = session();
+    let s = apply(
+        &mut session,
+        &[Command::Pulse {
+            value: PulseName::DottedEighth,
+        }],
+    );
+    assert_eq!(s.notation.len(), s.laps.len());
+    assert_ne!(s.notation[0], s.notation[1]);
 }
 
 #[test]
