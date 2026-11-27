@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">"Drum Pattern Generator"</string>
+    <string name="main_activity_title">"Drum Pattern Generator"</string>
+</resources>

@@ -1,0 +1,26 @@
+[package]
+name = "dpg-app"
+version = "0.1.0"
+description = "The app: a Tauri shell over the engine, with a Vue UI"
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+# Not named like the binary: on Windows the two would clash
+# (https://github.com/rust-lang/cargo/issues/8519).
+name = "dpg_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+drum-patterns = { path = "../../crates/drum-patterns" }
+dpg-engine = { path = "../../crates/dpg-engine" }
+dpg-samples = { path = "../../crates/dpg-samples" }
+dpg-hal = { path = "../../crates/dpg-hal" }
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }

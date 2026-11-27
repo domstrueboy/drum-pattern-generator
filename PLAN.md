@@ -97,13 +97,11 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Listen** with `dpg-play` and settle by ear: the ghost level, the
-   -4 / -14 dB hit levels, the metronome's pitches and -8 dB
-   subdivisions, the crash as an accent, the 0.8 Drums / Metronome
-   starting faders. Changes are constants; note what sounds wrong.
-2. The spec's two new *Open questions* (the crash in a silent bar, the
+1. The spec's two new *Open questions* (the crash in a silent bar, the
    crash menu's first choice) - for the author.
-3. **Step 5** (first real UI).
+2. **5a on the phone** - the APK was built but not installed (the phone
+   wasn't connected): install, Start, listen, note the latency shown.
+3. **Step 5b** (`dpg-session`).
 
 ### 2. `drum-patterns`
 
@@ -191,7 +189,8 @@ by. For step 5: Random's variants on a dotted pulse need a seed per lap
 as a text grid, the local kit at the device's rate. `CpalOutput::open`
 now takes a function that builds the renderer for the device, since
 the engine needs its rate. First run: Audient iD4 at 44.1 kHz, 32 ms,
-0 xruns). Step 4 is done.
+0 xruns. By ear, the levels, clicks, crash and faders all stay as
+they are). Step 4 is done.
 
 ### 5. First real UI
 
@@ -204,6 +203,28 @@ orange), reflowed for portrait; where it and the spec differ, the spec
 wins. Landscape and the orientation button (four orientations, no
 auto-rotate) follow once portrait works; the button needs a small
 Kotlin call (`setRequestedOrientation`).
+
+The logic stays in Rust, where it is tested; the UI renders a state
+snapshot and sends commands.
+
+| Sub-step | What |
+|---|---|
+| 5a | **App shell on main.** Tauri 2 + Vue 3 in `app/` (from the spike, renamed), `app/src-tauri` a workspace member. The engine opens at launch with a **placeholder kit synthesized in Rust** (`dpg-samples`, shippable - no licensed audio), until step 6's presets. One Start/Stop and the BPM, on the desktop and on the phone. |
+| 5b | **`dpg-session`** (new crate, no Tauri): the screen's state and every command - groove settings, the laps, Random's variants and index, Generate's ladders (each press harder), bars, metronome, bar skip, crash, mixer - driving a `Remote`. Tauri commands stay thin; each returns the new snapshot. |
+| 5c | **Notation spelling** in `dpg-session`: laps to notes a beat - value, dot, tuplet, rests, beam groups - plus the note-value row, the count, and konnakol only under notes. VexFlow only draws what it's given. |
+| 5d | **The portrait screen** without notation: Bars, Metronome, transport (Tap tempo, Start/Stop, Drums and Metronome faders), the instrument buttons with fader, S and M. Color, Sound and Settings shown, inert until steps 6-8. |
+| 5e | **Notation** with VexFlow at the real width, stacked or scrolled; the playhead from the engine's position; a dotted hi-hat redrawn on each lap. |
+| 5f | **Submenus:** Hi-hat, Snare, Kick, Bar skip, Crash - under the notation and transport, Back at the top, the instrument buttons pinned. |
+| 5g | **On the phone:** build, install, check the playhead against the sound, the touch sizes, the screen off; fix what's found. |
+| 5h | **Landscape** and the orientation button. |
+
+Not in step 5: state across launches (step 8), sounds (6), the kit
+photo, colour and Tap tempo's blink (7).
+
+Done: 5a (`app/` on main, crate `dpg-app` in the workspace, identifier
+`com.drumpatterngenerator.app`, Android project generated afresh;
+`dpg_samples::placeholder_kit` - a falling sine, tone and noise, fixed
+noise seed; on the desktop: Audient at 44.1 kHz, 32 ms, 0 xruns).
 
 ### 6. Sounds
 

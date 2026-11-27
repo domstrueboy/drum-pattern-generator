@@ -8,8 +8,13 @@ Android first, iOS later.
 `spike/tauri-android`) played a sample-exact loop on the test phone.
 Done: `drum-patterns` (every generator rule), `dpg-samples` (audio
 files to kit sounds), `dpg-hal` (the output) and `dpg-engine` (playing a
-groove: metronome, tap tempo, bar skip, crash, mixer). Next: the first
-real UI - see [PLAN.md](PLAN.md).
+groove: metronome, tap tempo, bar skip, crash, mixer). Now: the first
+real UI - `app/` plays a groove on a synthesized placeholder kit with
+Start/Stop and BPM; the rest of the screen is next - see
+[PLAN.md](PLAN.md).
+
+To run the app on a desktop: `pnpm install`, then `pnpm tauri dev`, in
+`app/` from a Windows terminal.
 
 To listen on a desktop: `cargo run -p dpg-play -- <kit folder>`, then
 `?` for the commands. The kit's file names are in
@@ -34,7 +39,7 @@ crates/
   dpg-engine      voices, scheduler, mixer, metronome, bar skip
   dpg-hal         the cpal output backend + a mock for tests
   dpg-play        a terminal player for listening on a desktop - dev only
-app/              Tauri shell + Vue UI
+app/              Tauri shell (src-tauri, crate dpg-app) + Vue UI
 ```
 
 The generator is a crate of its own so that
@@ -56,6 +61,6 @@ build of the Tauri CLI.
 `pnpm tauri android dev` / `build` link the Rust library into the
 Android project with a symlink, which needs Windows Developer Mode
 (Settings > System > For developers). Without it, copy
-`target/aarch64-linux-android/debug/libapp_lib.so` to
+`target/aarch64-linux-android/debug/libdpg_app_lib.so` to
 `gen/android/app/src/main/jniLibs/arm64-v8a/` and run
 `gradlew assembleArm64Debug -x rustBuildArm64Debug` in `gen/android`.
