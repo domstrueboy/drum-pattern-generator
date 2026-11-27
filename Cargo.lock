@@ -225,6 +225,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "dpg-play"
+version = "0.1.0"
+dependencies = [
+ "dpg-engine",
+ "dpg-hal",
+ "dpg-samples",
+ "drum-patterns",
+]
+
+[[package]]
 name = "dpg-samples"
 version = "0.1.0"
 dependencies = [

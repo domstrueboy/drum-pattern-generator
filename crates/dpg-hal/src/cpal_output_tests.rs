@@ -21,7 +21,7 @@ impl Render for Counter {
 #[ignore = "needs an audio device"]
 fn real_output_asks_for_frames() {
     let frames = Arc::new(AtomicUsize::new(0));
-    let output = CpalOutput::open(Counter(frames.clone())).unwrap();
+    let output = CpalOutput::open(|_| Counter(frames.clone())).unwrap();
     std::thread::sleep(Duration::from_millis(500));
     let asked = frames.load(Ordering::Relaxed);
     let info = output.info().clone();

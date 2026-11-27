@@ -97,9 +97,13 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. **Step 4g** (listen on Windows), once 4f is reviewed and committed.
+1. **Listen** with `dpg-play` and settle by ear: the ghost level, the
+   -4 / -14 dB hit levels, the metronome's pitches and -8 dB
+   subdivisions, the crash as an accent, the 0.8 Drums / Metronome
+   starting faders. Changes are constants; note what sounds wrong.
 2. The spec's two new *Open questions* (the crash in a silent bar, the
    crash menu's first choice) - for the author.
+3. **Step 5** (first real UI).
 
 ### 2. `drum-patterns`
 
@@ -183,10 +187,11 @@ sent, `BarSkip` and `CrashRule` - the same pure rules the engine plays
 by. For step 5: Random's variants on a dotted pulse need a seed per lap
 (`Groove` uses part `4 + 8 * lap`).
 
-- **4g. Listen on Windows:** a command-line player with the local kit,
-  to judge by ear: the ghost level, the -4 / -14 dB defaults, the
-  metronome's pitches and its -8 dB subdivisions, the crash as an
-  accent.
+4g (`dpg-play`: a terminal player - a command a line, the groove shown
+as a text grid, the local kit at the device's rate. `CpalOutput::open`
+now takes a function that builds the renderer for the device, since
+the engine needs its rate. First run: Audient iD4 at 44.1 kHz, 32 ms,
+0 xruns). Step 4 is done.
 
 ### 5. First real UI
 

@@ -6,8 +6,14 @@ Android first, iOS later.
 
 **Status:** the shell is decided - a throwaway spike (branch
 `spike/tauri-android`) played a sample-exact loop on the test phone.
-Done: `drum-patterns` (every generator rule) and `dpg-samples` (audio
-files to kit sounds). Next: the engine - see [PLAN.md](PLAN.md).
+Done: `drum-patterns` (every generator rule), `dpg-samples` (audio
+files to kit sounds), `dpg-hal` (the output) and `dpg-engine` (playing a
+groove: metronome, tap tempo, bar skip, crash, mixer). Next: the first
+real UI - see [PLAN.md](PLAN.md).
+
+To listen on a desktop: `cargo run -p dpg-play -- <kit folder>`, then
+`?` for the commands. The kit's file names are in
+`crates/dpg-play/src/kit.rs`.
 
 - [docs/spec.md](docs/spec.md) - what the app does, rule by rule
 - [docs/spec-original-ru.md](docs/spec-original-ru.md) - the original
@@ -27,6 +33,7 @@ crates/
   dpg-samples     decoding, resampling, trimming, kits
   dpg-engine      voices, scheduler, mixer, metronome, bar skip
   dpg-hal         the cpal output backend + a mock for tests
+  dpg-play        a terminal player for listening on a desktop - dev only
 app/              Tauri shell + Vue UI
 ```
 

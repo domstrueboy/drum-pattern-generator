@@ -24,8 +24,9 @@ pub struct CpalOutput {
 }
 
 impl CpalOutput {
-    /// Opens the default output and starts `render` on it.
-    pub fn open(render: impl Render) -> Result<Self, HalError> {
+    /// Opens the default output and starts on it what `make` builds -
+    /// given the device first, so the renderer can be made for its rate.
+    pub fn open<R: Render>(make: impl FnOnce(&OutputInfo) -> R) -> Result<Self, HalError> {
         let host = cpal::default_host();
         let device = host.default_output_device().ok_or(HalError::NoDevice)?;
         let supported = device
@@ -47,6 +48,7 @@ impl CpalOutput {
             rate: config.sample_rate,
             channels: config.channels,
         };
+        let render = make(&info);
 
         let stats = Arc::new(OutputStats::default());
         let stop = Arc::new(AtomicBool::new(false));
