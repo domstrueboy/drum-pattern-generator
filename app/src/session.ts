@@ -79,30 +79,33 @@ export interface ChannelState {
   mute: boolean;
 }
 
-export interface Snapshot {
-  // The output.
+/** The output, always reported. */
+export interface OutputState {
   error: string | null;
   device: string;
   rate: number;
   latencyMs: number;
   xruns: number;
-  // The session - missing when the output couldn't open.
-  playing?: boolean;
-  bpm?: number;
-  metronome?: boolean;
-  subdivision?: Subdivision;
-  bars?: number;
-  view?: View;
-  barSkip?: { play: number; skip: number } | null;
-  crashEvery?: number | null;
-  hiHat?: {
+}
+
+/** The session, reported once an output has opened. */
+export interface SessionState {
+  playing: boolean;
+  bpm: number;
+  metronome: boolean;
+  subdivision: Subdivision;
+  bars: number;
+  view: View;
+  barSkip: { play: number; skip: number } | null;
+  crashEvery: number | null;
+  hiHat: {
     pulse: Pulse;
     random: boolean;
     randomCount: number;
     randomIndex: number;
     density: number;
   };
-  snare?: {
+  snare: {
     feel: Feel;
     accents: number;
     ghosts: number;
@@ -110,16 +113,21 @@ export interface Snapshot {
     ghostRandomCount: number;
     ghostRandomIndex: number;
   };
-  kick?: { base: number; extra: number; extraLevel: number };
-  mixer?: {
+  kick: { base: number; extra: number; extraLevel: number };
+  mixer: {
     drums: number;
     metronome: number;
     hiHat: ChannelState;
     snare: ChannelState;
     kick: ChannelState;
   };
-  ticksPerBeat?: number;
-  ticksPerBar?: number;
-  laps?: Hit[][];
-  notation?: Notation[];
+  ticksPerBeat: number;
+  ticksPerBar: number;
+  laps: Hit[][];
+  notation: Notation[];
 }
+
+export type Snapshot = OutputState & Partial<SessionState>;
+
+/** The instruments with their own buttons, top to bottom. */
+export type DrumInstrument = "hiHat" | "snare" | "kick";

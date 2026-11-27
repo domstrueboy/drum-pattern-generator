@@ -54,6 +54,9 @@ Settled; worth not re-litigating without a new reason.
   settled.
 - **Build on Windows**, where the phone's adb and the looper's toolchain
   already are.
+- **Russian and English labels**, one table each (`app/src/labels.ts`).
+  The phone's language picks until Settings gets a language choice
+  (step 8).
 
 ## Ground rules
 
@@ -101,7 +104,7 @@ Ordered. One step at a time, each a commit.
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
    note-value row.
-2. **Step 5d** (the portrait screen).
+2. **Step 5e** (notation with VexFlow).
 
 ### 2. `drum-patterns`
 
@@ -239,7 +242,10 @@ for 16ths and 8th triplets together; two beats holding only
 quarter-triplet notes share one bracket. A note lasts to the next one
 inside its beat, rests split where the beat divides, nothing is tied
 across beats - a dotted pulse is written beat by beat. The snapshot
-carries one `Notation` a lap).
+carries one `Notation` a lap). 5d (the portrait screen without notation: Bars,
+Metronome, transport, instrument strips; one snapshot shared by every
+component; Bar skip, the sound, Color/Sound/Settings and the instrument
+buttons are shown but wait for 5f and steps 6-8).
 
 ### 6. Sounds
 
