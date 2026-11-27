@@ -1,35 +1,7 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { useSession } from "./useSession";
 
-/** What Rust reports; the screen only renders it. */
-interface Snapshot {
-  error: string | null;
-  playing: boolean;
-  bpm: number;
-  device: string;
-  rate: number;
-  latencyMs: number;
-  xruns: number;
-}
-
-const state = ref<Snapshot | null>(null);
-
-async function send(command: string, args?: Record<string, unknown>) {
-  state.value = await invoke<Snapshot>(command, args);
-}
-
-function nudgeBpm(by: number) {
-  if (state.value) send("set_bpm", { bpm: state.value.bpm + by });
-}
-
-// Refreshes the latency and xrun readout only; nothing here keeps time.
-let refresh: number | undefined;
-onMounted(() => {
-  send("snapshot");
-  refresh = window.setInterval(() => send("snapshot"), 1000);
-});
-onUnmounted(() => window.clearInterval(refresh));
+const { state, send } = useSession();
 </script>
 
 <template>
@@ -37,16 +9,16 @@ onUnmounted(() => window.clearInterval(refresh));
     <p v-if="state?.error" class="error">{{ state.error }}</p>
 
     <div class="bpm">
-      <button @click="nudgeBpm(-1)">–</button>
-      <span>{{ state ? Math.round(state.bpm) : "" }}</span>
-      <button @click="nudgeBpm(1)">+</button>
+      <button @click="send({ type: 'nudgeBpm', by: -1 })">–</button>
+      <span>{{ state?.bpm !== undefined ? Math.round(state.bpm) : "" }}</span>
+      <button @click="send({ type: 'nudgeBpm', by: 1 })">+</button>
       <small>BPM</small>
     </div>
 
     <button
       class="start"
       :class="{ playing: state?.playing }"
-      @click="send('start_stop')"
+      @click="send({ type: 'startStop' })"
     >
       {{ state?.playing ? "Stop" : "Start" }}
     </button>

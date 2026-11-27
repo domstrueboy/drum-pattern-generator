@@ -1,0 +1,18 @@
+[package]
+name = "dpg-session"
+version = "0.1.0"
+description = "The screen's state and every command, between the UI and the engine - no Tauri, no device"
+edition.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+drum-patterns = { path = "../drum-patterns" }
+dpg-engine = { path = "../dpg-engine" }
+rand = { version = "0.10.4", default-features = false, features = ["alloc", "std_rng"] }
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1"

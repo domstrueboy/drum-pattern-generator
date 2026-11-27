@@ -97,11 +97,10 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. The spec's two new *Open questions* (the crash in a silent bar, the
-   crash menu's first choice) - for the author.
-2. **5a on the phone** - the APK was built but not installed (the phone
-   wasn't connected): install, Start, listen, note the latency shown.
-3. **Step 5b** (`dpg-session`).
+1. The spec's *Open questions* 1-5 - for the author: the crash in a
+   silent bar, the crash menu's first choice, getting back to easy
+   ghost notes, hearing other accents, Random's starting count.
+2. **Step 5c** (notation spelling).
 
 ### 2. `drum-patterns`
 
@@ -224,7 +223,16 @@ photo, colour and Tap tempo's blink (7).
 Done: 5a (`app/` on main, crate `dpg-app` in the workspace, identifier
 `com.drumpatterngenerator.app`, Android project generated afresh;
 `dpg_samples::placeholder_kit` - a falling sine, tone and noise, fixed
-noise seed; on the desktop: Audient at 44.1 kHz, 32 ms, 0 xruns).
+noise seed; on the desktop: Audient at 44.1 kHz, 32 ms, 0 xruns; on
+the phone it plays), 5b (`dpg-session`: `Parts` keeps each part's
+settings and seed, so Generate or Random redraws one part and only
+those fitted around it move; laps rebuilt whole on each change.
+Generate climbs a ladder that a new count restarts; Random steps a set
+of N, Generate draws a new set. Commands and the snapshot are serde
+types; the shell has one `send` command. `app/src/session.ts` mirrors
+them by hand. A lost output - a phone call took it - is opened again on
+the next refresh; `Session::reconnect` carries every setting over,
+stopped).
 
 ### 6. Sounds
 

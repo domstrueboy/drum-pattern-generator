@@ -10,7 +10,8 @@ Done: `drum-patterns` (every generator rule), `dpg-samples` (audio
 files to kit sounds), `dpg-hal` (the output) and `dpg-engine` (playing a
 groove: metronome, tap tempo, bar skip, crash, mixer). Now: the first
 real UI - `app/` plays a groove on a synthesized placeholder kit with
-Start/Stop and BPM; the rest of the screen is next - see
+Start/Stop and BPM, through `dpg-session`, which already holds every
+command the screen will send; the screen itself is next - see
 [PLAN.md](PLAN.md).
 
 To run the app on a desktop: `pnpm install`, then `pnpm tauri dev`, in
@@ -38,6 +39,7 @@ crates/
   dpg-samples     decoding, resampling, trimming, kits
   dpg-engine      voices, scheduler, mixer, metronome, bar skip
   dpg-hal         the cpal output backend + a mock for tests
+  dpg-session     the screen's state and every command - the app's logic
   dpg-play        a terminal player for listening on a desktop - dev only
 app/              Tauri shell (src-tauri, crate dpg-app) + Vue UI
 ```

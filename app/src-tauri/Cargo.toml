@@ -18,9 +18,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-drum-patterns = { path = "../../crates/drum-patterns" }
 dpg-engine = { path = "../../crates/dpg-engine" }
 dpg-samples = { path = "../../crates/dpg-samples" }
 dpg-hal = { path = "../../crates/dpg-hal" }
+dpg-session = { path = "../../crates/dpg-session" }
 tauri = { version = "2", features = [] }
 serde = { version = "1", features = ["derive"] }

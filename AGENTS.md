@@ -7,6 +7,7 @@ Adapted from looper-pedal's; where they agree, keep them agreeing.
 
 ```
 app             Tauri 2 shell (src-tauri) + Vue 3 / TypeScript UI
+dpg-session     the screen's state and commands, driving the engine (no tauri)
 dpg-engine      voices, scheduler, mixer, metronome, bar skip (no cpal)
 dpg-samples     decode, resample, trim, kits (no cpal)
 dpg-hal         audio output devices and streams, plus a mock (no patterns)
@@ -14,8 +15,9 @@ drum-patterns   pattern model + generator rules (no audio, no UI, no I/O)
 dpg-play        dev tool: a terminal player with a local kit (never shipped)
 ```
 
-Dependency direction: app/play -> engine -> samples, hal; anything may use
-`drum-patterns`, and it uses nothing of ours.
+Dependency direction: app -> session -> engine; app/play -> engine ->
+samples, hal; anything may use `drum-patterns`, and it uses nothing of
+ours.
 
 **Hard boundaries** - never cross:
 - `cpal` types only in `dpg-hal`.

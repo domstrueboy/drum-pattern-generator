@@ -255,3 +255,11 @@ For the author. Answers replace the question with the rule.
 2. **The crash menu's first choice.** The menu lists "once at the start",
    "every квадрат", "every 2 квадрата" - is there also "never"? For now
    there isn't, and "once at the start" is the default.
+3. **Back to easy.** Generate makes ghost notes and extra kicks harder
+   with each press. How does the user get back to the easiest level?
+   For now a new count starts the ladder again at level 1.
+4. **Other accents.** The Accents menu picks 2, 3 or 4 - how does the
+   user hear the same count placed differently? For now, choosing a
+   count again places the accents afresh.
+5. **Random's count to start with.** N runs from 1 to 24; for now it
+   starts at 4.
