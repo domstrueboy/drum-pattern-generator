@@ -4,11 +4,11 @@
 //! Sound menu's presets, synthesized.
 
 mod decode;
+mod dsp;
 mod kit;
 mod level;
 mod presets;
 mod resample;
-mod synth;
 mod trim;
 
 #[cfg(test)]
@@ -19,5 +19,4 @@ pub use kit::{ACCENT_DB, GHOST_DB, Kit, LoadError, NORMAL_DB, SampleFile, Sound}
 pub use level::level;
 pub use presets::{Preset, preset_sound};
 pub use resample::{ResampleError, resample};
-pub use synth::placeholder_kit;
 pub use trim::trim;

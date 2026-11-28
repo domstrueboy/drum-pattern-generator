@@ -8,12 +8,12 @@ Android first, iOS later.
 `spike/tauri-android`) played a sample-exact loop on the test phone.
 Done: `drum-patterns` (every generator rule), `dpg-samples` (audio
 files to kit sounds), `dpg-hal` (the output) and `dpg-engine` (playing a
-groove: metronome, tap tempo, bar skip, crash, mixer). Now: the first
-real UI - `app/` shows the portrait screen with the groove in notation
-(VexFlow) and a playhead, played on a synthesized placeholder kit
-through `dpg-session`, which holds every command the screen sends, and
-every menu of the groove works; trying it on the phone is next - see
-[PLAN.md](PLAN.md).
+groove: metronome, tap tempo, bar skip, crash, mixer) and the first
+real UI - `app/` shows the screen in portrait and landscape with the
+groove in notation (VexFlow) and a playhead, through `dpg-session`,
+which holds every command the screen sends. Now: sounds - six metronome
+sounds and five synthesized kit presets are in; the Sound menu and
+your own samples are next - see [PLAN.md](PLAN.md).
 
 To run the app on a desktop: `pnpm install`, then `pnpm tauri dev`, in
 `app/` from a Windows terminal.

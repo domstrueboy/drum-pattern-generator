@@ -319,7 +319,12 @@ session's `MetronomeSound` steps to the next and survives a reconnect),
 placeholder's sound until 6c; the session owns the kit: built from each
 instrument's choice at `Remote::rate`, changed one instrument at a time
 and sent as a copy, made afresh on a reconnect at the new rate. The
-shell no longer loads a kit; the session now uses `dpg-samples`).
+shell no longer loads a kit; the session now uses `dpg-samples`), 6c
+(`dsp`: seeded noise, envelopes, one-pole and band-pass filters, a
+falling sine, the 808's six-square metal; `presets`: one recipe each
+for kick, snare and cymbal, five rows of numbers a style. The
+placeholder kit is gone. `render_presets` (ignored test) writes every
+sound and a groove a style to WAV under `samples/` for listening).
 
 ### 7. Look
 

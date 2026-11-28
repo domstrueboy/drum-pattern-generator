@@ -1,5 +1,5 @@
-//! The app's shell: opens the output, starts a session on the placeholder
-//! kit and passes the UI's commands to it. Every command returns a fresh
+//! The app's shell: opens the output, starts a session on it and passes
+//! the UI's commands to it. Every command returns a fresh
 //! snapshot; the UI only renders it. What a command does is
 //! `dpg-session`'s.
 //!
@@ -49,7 +49,7 @@ struct AppSnapshot {
     session: Option<Snapshot>,
 }
 
-/// Opens the default output with a new engine on the placeholder kit.
+/// Opens the default output with a new engine; the session gives it a kit.
 fn open_output() -> Result<(CpalOutput, Remote), String> {
     let mut remote = None;
     let output = CpalOutput::open(|info| {
