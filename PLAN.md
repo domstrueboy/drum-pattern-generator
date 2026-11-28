@@ -104,7 +104,20 @@ Ordered. One step at a time, each a commit.
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
    note-value row, where the Crash button sits, no accents.
-2. **Step 6** (sounds): split it into sub-steps first.
+2. The user's verdict on the presets and the six metronome sounds by
+   ear (grooves in `samples/presets/`, made by the ignored test
+   `render_presets`); tune the numbers in `presets.rs` / `clicks.rs`.
+3. **Step 6e** (your own samples): `tauri-plugin-dialog` and
+   `tauri-plugin-fs` are approved - pin versions at least two weeks old.
+   Then 6f on the phone.
+
+How to check and build (Windows side, from WSL through
+`powershell.exe`): `cargo fmt --all`, `cargo test --workspace`,
+`cargo clippy --workspace --all-targets -- -D warnings`, `cargo doc
+--workspace --no-deps`; `pnpm build` in `app/`; the phone build is the
+Developer Mode workaround in *Android notes* (copy the `.so`, then
+`gradlew --no-daemon assembleArm64Debug -x rustBuildArm64Debug`, then
+`adb install -r`).
 
 ### 2. `drum-patterns`
 
@@ -324,7 +337,10 @@ shell no longer loads a kit; the session now uses `dpg-samples`), 6c
 falling sine, the 808's six-square metal; `presets`: one recipe each
 for kick, snare and cymbal, five rows of numbers a style. The
 placeholder kit is gone. `render_presets` (ignored test) writes every
-sound and a groove a style to WAV under `samples/` for listening).
+sound and a groove a style to WAV under `samples/` for listening), 6d
+(the Sound button opens a menu where the others do: a row of five per
+instrument, the chosen one lit, a note that the crash follows the
+hi-hat).
 
 ### 7. Look
 

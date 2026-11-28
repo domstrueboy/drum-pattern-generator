@@ -1,21 +1,29 @@
 <script setup lang="ts">
-// Transport: Color, Sound and Settings on the left (steps 6-8), Tap tempo
+// Transport: Color, Sound and Settings on the left (Sound opens its menu;
+// the others wait for steps 7-8), Tap tempo
 // over Start/Stop in the centre, the Drums and Metronome faders right.
 import { useLabels } from "../labels";
 import type { SessionState } from "../session";
+import { useMenu } from "../useMenu";
 import { useSession } from "../useSession";
 import LevelFader from "./LevelFader.vue";
 
 defineProps<{ s: SessionState }>();
 const { send } = useSession();
 const t = useLabels();
+const { menu, open } = useMenu();
 </script>
 
 <template>
   <div class="row transport">
     <div class="menus">
       <button>{{ t.color }}</button>
-      <button>{{ t.sound }}</button>
+      <button
+        :class="{ selected: menu === 'sound' }"
+        @click="open(menu === 'sound' ? null : 'sound')"
+      >
+        {{ t.sound }}
+      </button>
       <button>{{ t.settings }}</button>
     </div>
     <div class="centre">

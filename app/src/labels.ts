@@ -6,6 +6,7 @@ import type {
   DrumInstrument,
   Feel,
   HiHatAccents,
+  Preset,
   Pulse,
   Subdivision,
 } from "./session";
@@ -38,6 +39,8 @@ export interface Labels {
   /** The triplet mark in the note-value row: 8t. */
   triplet: string;
   back: string;
+  presets: Record<Preset, string>;
+  crashFollows: string;
   rotate: string;
   fewer: string;
   plenty: string;
@@ -97,6 +100,8 @@ const en: Labels = {
   letters: { "и": "&", "т": "t", "к": "k" },
   triplet: "t",
   back: "Back",
+  presets: { rock: "Rock", hipHop: "Hip-hop", electro: "Electro", jazz: "Jazz", metal: "Metal" },
+  crashFollows: "The crash follows the hi-hat.",
   rotate: "Turn the screen",
   fewer: "Fewer",
   plenty: "More",
@@ -155,6 +160,8 @@ const ru: Labels = {
   letters: {},
   triplet: "т",
   back: "Назад",
+  presets: { rock: "Рок", hipHop: "Хип-хоп", electro: "Электро", jazz: "Джаз", metal: "Метал" },
+  crashFollows: "Крэш звучит в стиле хай-хета.",
   rotate: "Повернуть экран",
   fewer: "Меньше",
   plenty: "Больше",

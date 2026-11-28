@@ -14,6 +14,7 @@ import HiHatMenu from "./HiHatMenu.vue";
 import KickMenu from "./KickMenu.vue";
 import LevelFader from "./LevelFader.vue";
 import SnareMenu from "./SnareMenu.vue";
+import SoundMenu from "./SoundMenu.vue";
 
 defineProps<{ s: SessionState }>();
 const { send } = useSession();
@@ -26,7 +27,7 @@ const colors: Record<DrumInstrument, string> = {
   kick: "var(--kick)",
 };
 
-// Bar skip and the crash open their menus from the top of the screen:
+// Bar skip, the crash and Sound open their menus from above:
 // bring the menu into view, or the press seems to do nothing.
 const panel = ref<HTMLElement | null>(null);
 watch(menu, async (which) => {
@@ -88,6 +89,7 @@ function toggle(i: DrumInstrument) {
       <SnareMenu v-else-if="menu === 'snare'" :s="s" />
       <KickMenu v-else-if="menu === 'kick'" :s="s" />
       <BarSkipMenu v-else-if="menu === 'barSkip'" :s="s" />
+      <SoundMenu v-else-if="menu === 'sound'" :s="s" />
       <CrashMenu v-else :s="s" />
     </div>
   </div>
