@@ -38,7 +38,7 @@ impl Feel {
 
 /// Rewrites the snare: the feel's main hits, then `accents` accented hits
 /// a bar, placed at random on 8ths free of the main hits and of any kick
-/// already written. Each bar gets its own accents - a 1-bar pattern
+/// already written - never on the 1, which is the kick's. Each bar gets its own accents - a 1-bar pattern
 /// repeats them. Asking for more accents than free 8ths places one on
 /// each. Other instruments are left alone.
 pub fn snare(pattern: &mut Pattern, feel: Feel, accents: u8, rng: &mut impl Rng) {
@@ -48,7 +48,7 @@ pub fn snare(pattern: &mut Pattern, feel: Feel, accents: u8, rng: &mut impl Rng)
     let main = feel.ticks_in_bar(time.beats() as u32, time.ticks_per_beat());
     let eighths: Vec<u32> = (0..per_bar)
         .step_by(NoteValue::Eighth.ticks() as usize)
-        .filter(|t| !main.contains(t))
+        .filter(|&t| t != 0 && !main.contains(&t))
         .collect();
 
     for bar in 0..pattern.bars() as u32 {

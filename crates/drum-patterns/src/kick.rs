@@ -20,8 +20,9 @@ use crate::time::NoteValue;
 #[path = "kick_tests.rs"]
 mod tests;
 
-/// Rewrites the base kicks: `count` kicks a bar, placed at random on 8ths
-/// that have no snare hit of any kind. Each bar gets its own. Asking for
+/// Rewrites the base kicks: `count` kicks a bar on 8ths that have no
+/// snare hit of any kind - the first always on the 1, the rest at random.
+/// Each bar gets its own. Asking for
 /// more than the free 8ths places one on each. Kicks between the 8ths -
 /// the extra kicks - and other instruments are left alone.
 pub fn base_kicks(pattern: &mut Pattern, count: u8, rng: &mut impl Rng) {
@@ -36,7 +37,12 @@ pub fn base_kicks(pattern: &mut Pattern, count: u8, rng: &mut impl Rng) {
             .step_by(eighth as usize)
             .filter(|&t| pattern.get(t, Instrument::Snare).is_none())
             .collect();
-        let chosen: Vec<u32> = free.sample(rng, count as usize).copied().collect();
+        let (one, rest): (Vec<u32>, Vec<u32>) = free.iter().partition(|&&t| t == start);
+        let others = (count as usize).saturating_sub(one.len());
+        let chosen = one
+            .into_iter()
+            .take(count as usize)
+            .chain(rest.sample(rng, others).copied());
         for tick in chosen {
             let hit = Hit::new(tick, Instrument::Kick, HitKind::Normal);
             pattern.set(hit).expect("every tick is inside the pattern");

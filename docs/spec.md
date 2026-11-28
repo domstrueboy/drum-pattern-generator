@@ -162,10 +162,10 @@ the next one, and after the last back to the first.
   | half time | beat 3 only |
   | double time | every "и" - four a bar: 2 and 4 counted at double speed |
 
-- **Accents** a bar: 2, 3 or 4 accented snare hits on the 8ths
-  (`1 и 2 и 3 и 4 и`), added on top of the feel's main hits - never on
-  a main hit or a kick. Each bar gets its own; a 1-bar pattern repeats
-  them.
+- **Accents** a bar: 1, 2, 3 or 4 accented snare hits on the 8ths
+  (`и 2 и 3 и 4 и`), added on top of the feel's main hits - never on
+  a main hit or a kick, and never on the 1, which is the kick's. Each
+  bar gets its own; a 1-bar pattern repeats them.
 
 - **Ghost notes:** a count a bar, and **Generate**. Each press gives a
   harder variant than the last - there's no separate difficulty
@@ -185,7 +185,8 @@ the next one, and after the last back to the first.
 ## Kick submenu
 
 - **Base kicks:** a count the user sets, and **Generate**. On 8ths
-  only, inside the bar, on the 8ths the snare doesn't take.
+  only, inside the bar, on the 8ths the snare doesn't take. The first
+  is always on the 1; Generate moves the others.
 - **Extra kicks:** a count a bar, and **Generate**, harder with each
   press like the ghost notes. Only on the 16ths between the 8ths, never
   on a snare hit:
@@ -262,7 +263,7 @@ For the author. Answers replace the question with the rule.
 3. **Back to easy.** Generate makes ghost notes and extra kicks harder
    with each press. How does the user get back to the easiest level?
    For now a new count starts the ladder again at level 1.
-4. **Other accents.** The Accents menu picks 2, 3 or 4 - how does the
+4. **Other accents.** The Accents menu picks 1 to 4 - how does the
    user hear the same count placed differently? For now, choosing a
    count again places the accents afresh.
 5. **Random's count to start with.** N runs from 1 to 24; for now it
@@ -274,5 +275,5 @@ For the author. Answers replace the question with the rule.
 7. **Where the Crash button sits.** The screen's table has no place for
    it. For now it's in the Bars row after Bar skip - both count bars of
    playback - and its menu opens where the instrument menus do.
-8. **No accents.** The Accents menu lists 2, 3 or 4, but a groove
+8. **No accents.** The Accents menu lists 1 to 4, but a groove
    starts with none. For now the menu has **None** too.

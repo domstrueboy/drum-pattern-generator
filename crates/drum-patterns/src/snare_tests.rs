@@ -81,9 +81,31 @@ fn accents_sit_on_free_8ths() {
 
 #[test]
 fn accents_beyond_the_free_8ths_fill_them_all() {
-    // Double time leaves 1, 2, 3 and 4 free.
+    // Double time leaves 2, 3 and 4 free; the 1 is the kick's.
     let p = written(1, Feel::DoubleTime, 6, 1);
-    assert_eq!(ticks_of(&p, HitKind::Accent), [0, 12, 24, 36]);
+    assert_eq!(ticks_of(&p, HitKind::Accent), [12, 24, 36]);
+}
+
+#[test]
+fn accents_leave_the_one_to_the_kick() {
+    for feel in [Feel::Basic, Feel::HalfTime, Feel::DoubleTime] {
+        for seed in 0..50 {
+            let p = written(2, feel, 4, seed);
+            for tick in ticks_of(&p, HitKind::Accent) {
+                assert_ne!(tick % 48, 0, "{feel:?} seed {seed}: an accent on the 1");
+            }
+        }
+    }
+}
+
+#[test]
+fn a_single_accent_is_placed() {
+    for seed in 0..20 {
+        assert_eq!(
+            ticks_of(&written(2, Feel::Basic, 1, seed), HitKind::Accent).len(),
+            2
+        );
+    }
 }
 
 #[test]

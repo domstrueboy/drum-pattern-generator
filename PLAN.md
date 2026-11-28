@@ -263,7 +263,9 @@ turns off. A Bar skip or Crash choice closes its menu; the instrument
 menus stay until Back. The snapshot reports the menus' limits, so the
 UI keeps no copy of them; hi-hat accents added at the user's request,
 missed in the spec: off, on the beats or on the и - `hi_hat_accents`
-in `drum-patterns`, a field of `Groove` too).
+in `drum-patterns`, a field of `Groove` too; at the user's request
+too, 1 snare accent, and the first base kick always on the 1 - so
+snare accents keep off the 1).
 
 ### 6. Sounds
 

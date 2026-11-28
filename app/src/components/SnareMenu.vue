@@ -11,7 +11,7 @@ defineProps<{ s: SessionState }>();
 const { send } = useSession();
 const t = useLabels();
 const feels: Feel[] = ["basic", "half", "double"];
-const accents = [0, 2, 3, 4];
+const accents = [0, 1, 2, 3, 4];
 </script>
 
 <template>

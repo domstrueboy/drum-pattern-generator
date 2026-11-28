@@ -40,6 +40,28 @@ fn places_the_asked_kicks_in_every_bar() {
 }
 
 #[test]
+fn the_first_kick_is_on_the_one_in_every_bar() {
+    for count in 1..=4 {
+        for seed in 0..20 {
+            let p = groove(3, count, seed);
+            for bar in 0..3 {
+                assert!(
+                    p.get(bar * 48, Instrument::Kick).is_some(),
+                    "{count} kicks, seed {seed}, bar {bar}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn one_kick_is_only_the_one() {
+    for seed in 0..20 {
+        assert_eq!(kick_ticks(&groove(2, 1, seed)), [0, 48]);
+    }
+}
+
+#[test]
 fn kicks_sit_on_8ths_the_snare_leaves_free() {
     for seed in 0..50 {
         let p = groove(2, 4, seed);
@@ -116,7 +138,8 @@ fn different_seeds_vary_the_kicks() {
             kick_ticks(&p)
         })
         .collect();
-    assert!(variants.len() > 3, "only {} variants", variants.len());
+    // The first is on the 1; the second takes each of the 3 other free 8ths.
+    assert_eq!(variants.len(), 3, "{variants:?}");
 }
 
 /// Basic snare with 2 accents, 2 base kicks a bar, then extra kicks.
