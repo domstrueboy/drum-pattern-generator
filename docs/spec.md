@@ -27,9 +27,15 @@ when a submenu opens. A submenu opens under the notation and the
 transport without covering them, and has **Back** at the top. In
 portrait it may cover the kit photo.
 
-**Orientation:** a very small arrow button in the top-left corner steps
-through the four orientations - portrait, portrait upside down, and
-landscape either way. The screen never rotates on its own.
+**Orientation:** a small arrow button in the top-left corner steps
+through the four orientations, a quarter turn each press - portrait,
+landscape, portrait upside down, landscape the other way. The screen
+never rotates on its own.
+
+**Landscape:** the notation and the kit share the left half, notation
+above; Bars, Metronome and the transport stack on the right. The
+notation keeps at least one bar's height; a submenu scrolls inside the
+kit's place.
 
 ## Notation
 

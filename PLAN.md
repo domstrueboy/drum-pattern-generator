@@ -104,7 +104,7 @@ Ordered. One step at a time, each a commit.
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
    note-value row, where the Crash button sits, no accents.
-2. **Step 5h** (landscape and the orientation button).
+2. **Step 6** (sounds): split it into sub-steps first.
 
 ### 2. `drum-patterns`
 
@@ -269,7 +269,16 @@ px: the screen fits without scrolling after tighter spacing, touch
 targets still 40 px; 48 kHz, 40 ms, 0 xruns; the groove plays on with
 the screen locked; the playhead matches the sound. Found and fixed: the
 line stuck after Stop and Start - the screen doesn't ask while stopped,
-so `Glide` now takes a report behind the last one as a new Start).
+so `Glide` now takes a report behind the last one as a new Start), 5h
+(the arrow button calls `window.DpgOrientation.next()`, a JavaScript
+interface `MainActivity.kt` adds to the WebView, which sets
+`requestedOrientation` - portrait at launch, a quarter turn each press;
+on the desktop the button is hidden. Landscape, by the author's choice:
+notation and kit on the left, the other rows on the right, each side
+scrolling on its own if it must; one bar is drawn to fit the height.
+Upside down the camera cutout takes the bottom, so portrait was
+tightened again and the developer's status line is hidden on phones).
+Step 5 is done.
 
 ### 6. Sounds
 

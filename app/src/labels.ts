@@ -31,6 +31,7 @@ export interface Labels {
   /** The triplet mark in the note-value row: 8t. */
   triplet: string;
   back: string;
+  rotate: string;
   fewer: string;
   plenty: string;
   crash: string;
@@ -82,6 +83,7 @@ const en: Labels = {
   letters: { "и": "&", "т": "t", "к": "k" },
   triplet: "t",
   back: "Back",
+  rotate: "Turn the screen",
   fewer: "Fewer",
   plenty: "More",
   crash: "Crash",
@@ -132,6 +134,7 @@ const ru: Labels = {
   letters: {},
   triplet: "т",
   back: "Назад",
+  rotate: "Повернуть экран",
   fewer: "Меньше",
   plenty: "Больше",
   crash: "Крэш",

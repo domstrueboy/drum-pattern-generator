@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // Bars: the pattern's length, stacked or scrolled, Bar skip and the crash.
-// Bar skip is a toggle: off, it opens its menu; on, it turns off.
+// Bar skip is a toggle: off, it opens its menu; on, it turns off. On a
+// phone the arrow in the corner turns the screen a quarter each press.
 import { computed } from "vue";
 import { useLabels } from "../labels";
 import type { SessionState } from "../session";
@@ -11,6 +12,11 @@ const props = defineProps<{ s: SessionState }>();
 const { send } = useSession();
 const t = useLabels();
 const { menu, open } = useMenu();
+const canTurn = window.DpgOrientation !== undefined;
+
+function turn() {
+  window.DpgOrientation?.next();
+}
 
 // The button names the chosen variant once Bar skip is on.
 const barSkip = computed(() =>
@@ -29,6 +35,15 @@ function crashPressed() {
 
 <template>
   <div class="row">
+    <button
+      v-if="canTurn"
+      class="square turn"
+      :aria-label="t.rotate"
+      :title="t.rotate"
+      @click="turn"
+    >
+      ↻
+    </button>
     <span class="caption">{{ t.bars }}</span>
     <div class="group">
       <button
@@ -73,3 +88,10 @@ function crashPressed() {
     </button>
   </div>
 </template>
+
+<style scoped>
+.turn {
+  font-size: 13px;
+  color: var(--muted);
+}
+</style>

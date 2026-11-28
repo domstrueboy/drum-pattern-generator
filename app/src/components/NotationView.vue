@@ -16,6 +16,17 @@ const playhead = usePlayhead(() => props.s.playing);
 const root = ref<HTMLElement | null>(null);
 const staffs = ref<HTMLElement[]>([]);
 const width = ref(0);
+const height = ref(0);
+
+// In landscape the panel's height is fixed by the screen, and one bar is
+// drawn to fit it; in portrait the panel grows with what it holds.
+const sideways = window.matchMedia("(orientation: landscape) and (min-width: 600px)");
+const landscape = ref(sideways.matches);
+const onTurn = () => (landscape.value = sideways.matches);
+sideways.addEventListener("change", onTurn);
+
+/** Room the count, values and konnakol take around each bar's notes. */
+const TEXT_LINES = 59;
 const layouts = shallowRef<BarLayout[]>([]);
 
 const lap = computed(() => {
@@ -31,15 +42,23 @@ let observer: ResizeObserver | undefined;
 onMounted(() => {
   observer = new ResizeObserver(([entry]) => {
     width.value = Math.floor(entry.contentRect.width);
+    height.value = Math.floor(entry.contentRect.height);
   });
   if (root.value) observer.observe(root.value);
 });
-onUnmounted(() => observer?.disconnect());
+onUnmounted(() => {
+  observer?.disconnect();
+  sideways.removeEventListener("change", onTurn);
+});
+
+const staffHeight = computed(() =>
+  landscape.value && height.value > 0 ? height.value - TEXT_LINES : Infinity,
+);
 
 // A new snapshot every second carries the same notation; draw again only
 // when what's drawn would change.
 const drawn = computed(() =>
-  JSON.stringify([lap.value, barWidth.value, props.s.view]),
+  JSON.stringify([lap.value, barWidth.value, props.s.view, staffHeight.value]),
 );
 watch(
   drawn,
@@ -57,6 +76,7 @@ watch(
         ticksPerBar,
         ticksPerBeat,
         barWidth.value,
+        staffHeight.value,
       ),
     );
   },
@@ -198,9 +218,9 @@ function value(label: string) {
 }
 
 .count {
-  height: 22px;
+  height: 20px;
   font-size: 20px;
-  line-height: 22px;
+  line-height: 20px;
   color: var(--muted);
 }
 
@@ -209,9 +229,9 @@ function value(label: string) {
 }
 
 .values {
-  height: 18px;
+  height: 16px;
   font-size: 13px;
-  line-height: 18px;
+  line-height: 16px;
   color: var(--muted);
 }
 

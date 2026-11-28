@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// The one screen, portrait, top to bottom as the spec lists it.
+// The one screen. Portrait: top to bottom as the spec lists it.
+// Landscape: the notation and the kit on the left, the other controls on
+// the right.
 import { computed } from "vue";
 import BarsRow from "./components/BarsRow.vue";
 import KitPanel from "./components/KitPanel.vue";
@@ -21,13 +23,15 @@ const s = computed(() =>
 <template>
   <main>
     <p v-if="state?.error" class="error">{{ state.error }}</p>
-    <template v-if="s">
-      <BarsRow :s="s" />
-      <MetronomeRow :s="s" />
-      <TransportRow :s="s" />
-      <NotationView :s="s" />
-      <KitPanel :s="s" />
-    </template>
+    <div v-if="s" class="screen">
+      <div class="area-controls">
+        <BarsRow :s="s" />
+        <MetronomeRow :s="s" />
+        <TransportRow :s="s" />
+      </div>
+      <NotationView class="area-notation" :s="s" />
+      <KitPanel class="area-kit" :s="s" />
+    </div>
     <p v-if="state && !state.error" class="status">
       {{ state.device }} · {{ state.rate }} Hz ·
       {{ Math.round(state.latencyMs) }} ms · {{ state.xruns }} xruns
@@ -121,6 +125,75 @@ button.on {
 .caption {
   font-size: 12px;
   color: var(--muted);
+}
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * On its side a phone is too short for the rows one under another: the
+ * notation and the kit share the left half, the other rows the right.
+ * The notation takes what height is left, but never less than one bar's
+ * worth: a tall menu scrolls inside the kit instead. The page itself never
+ * scrolls, or it would slide under the status bar.
+ */
+@media (orientation: landscape) and (min-width: 600px) {
+  main {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .screen {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(170px, 1fr) minmax(0, auto);
+    grid-template-areas:
+      "notation controls"
+      "kit controls";
+  }
+
+  .area-controls {
+    grid-area: controls;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .area-controls .row {
+    padding: 4px 8px;
+  }
+
+  .area-notation {
+    grid-area: notation;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .area-notation,
+  .area-kit {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .area-kit {
+    grid-area: kit;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* The developer's readout: no room for it on its side. */
+  .status {
+    display: none;
+  }
+}
+
+/* The developer's readout: on a phone it costs a row the screen lacks. */
+@media (pointer: coarse) {
+  .status {
+    display: none;
+  }
 }
 
 .status {

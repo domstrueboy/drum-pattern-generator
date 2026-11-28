@@ -102,7 +102,7 @@ function toggle(i: DrumInstrument) {
   flex: 1;
   display: grid;
   grid-template-columns: 84px minmax(0, 1.4fr) minmax(0, 1fr);
-  grid-template-rows: repeat(3, 48px) auto;
+  grid-template-rows: repeat(3, 44px) auto;
   column-gap: 8px;
   align-items: center;
   padding: 6px 8px;

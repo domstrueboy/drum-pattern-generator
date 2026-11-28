@@ -23,7 +23,7 @@ import type { Instrument, NoteEvent, NoteGroup } from "../session";
  * Notes are drawn this much larger than VexFlow's size, to read from a
  * stand - less when a bar is too busy for its width.
  */
-const SCALE = 1.3;
+const SCALE = 1.25;
 
 /** Room left and right of the notes, in VexFlow units. */
 const MARGIN = 16;
@@ -126,7 +126,7 @@ function beams(notes: StaveNote[], events: NoteEvent[]): Beam[] {
 
 /**
  * Draws `groups` - one bar, starting at `start` - into `host`, `width`
- * CSS pixels wide, replacing what was there.
+ * CSS pixels wide and at most `height` tall, replacing what was there.
  */
 export function drawBar(
   host: HTMLElement,
@@ -135,6 +135,7 @@ export function drawBar(
   ticksPerBar: number,
   ticksPerBeat: number,
   width: number,
+  height = Infinity,
 ): BarLayout {
   host.replaceChildren();
   const colors: Record<Instrument, string> = {
@@ -172,13 +173,14 @@ export function drawBar(
   voice.addTickables(notes);
   const formatter = new Formatter().joinVoices([voice]);
 
-  // Smaller rather than cut off: 24 notes a bar need the room.
+  // Smaller rather than cut off: 24 notes a bar need the room, and in
+  // landscape a bar must fit the height it is given.
   const least = formatter.preCalculateMinTotalWidth([voice]) + 3 * MARGIN;
-  const scale = Math.min(SCALE, width / least);
-  const height = HEIGHT * scale;
+  const scale = Math.min(SCALE, width / least, height / HEIGHT);
+  const drawn = HEIGHT * scale;
 
   const renderer = new Renderer(host as HTMLDivElement, Renderer.Backends.SVG);
-  renderer.resize(width, height);
+  renderer.resize(width, drawn);
   const ctx = renderer.getContext();
   ctx.scale(scale, scale);
   ctx.setFillStyle(ink);
@@ -212,6 +214,6 @@ export function drawBar(
       return end.x;
     },
     notes: placed,
-    height,
+    height: drawn,
   };
 }
