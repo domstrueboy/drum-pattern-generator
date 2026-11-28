@@ -264,5 +264,6 @@ For the author. Answers replace the question with the rule.
 5. **Random's count to start with.** N runs from 1 to 24; for now it
    starts at 4.
 6. **The note-value row.** Is it a value over each note (`16`, `8.`,
-   `8t`), or one over each group of notes? For now one over each note,
-   only where there's a note - like the konnakol.
+   `8t`), or one over each group of notes? For now one on a beat's first
+   note and wherever the value changes in the beat: over every note,
+   24 labels a bar overlap on a phone.

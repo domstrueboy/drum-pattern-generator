@@ -8,6 +8,10 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(() => ({
   plugins: [vue()],
 
+  // VexFlow carries its music font inside, so the app needs no network:
+  // one bundle of about 800 kB is expected.
+  build: { chunkSizeWarningLimit: 1000 },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors

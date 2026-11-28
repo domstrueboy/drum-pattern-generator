@@ -7,6 +7,7 @@ mod command;
 mod names;
 mod notation;
 mod parts;
+mod playhead;
 mod session;
 mod snapshot;
 
@@ -14,6 +15,7 @@ pub use command::{Command, Fader};
 pub use names::{FeelName, InstrumentName, KindName, PulseName, SubdivisionName};
 pub use notation::{CountView, Event, Group, Notation, NoteHit, Tuplet, notation};
 pub use parts::{Ladder, MAX_COUNT, Parts, RANDOM_COUNT, Set};
+pub use playhead::{Glide, MAX_GLIDE, Playhead, locate};
 pub use session::{Session, View};
 pub use snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, MixerView, Snapshot, SnareView,

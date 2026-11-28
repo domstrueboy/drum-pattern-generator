@@ -73,6 +73,12 @@ export interface Notation {
   bars: NoteGroup[][];
 }
 
+/** Where the sound is: the lap playing and the tick in it. */
+export interface Playhead {
+  lap: number;
+  tick: number;
+}
+
 export interface ChannelState {
   level: number;
   solo: boolean;

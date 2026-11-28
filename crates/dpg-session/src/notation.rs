@@ -67,7 +67,8 @@ pub struct Event {
     pub dots: u8,
     /// A rest rather than a note.
     pub rest: bool,
-    /// The note-value row's label - `16`, `8.`, `8t` - on notes only.
+    /// The note-value row's label - `16`, `8.`, `8t` - on a group's first
+    /// note and wherever the value changes in it.
     pub label: Option<String>,
     /// What is struck; empty for a rest.
     pub hits: Vec<NoteHit>,
@@ -222,6 +223,16 @@ impl Speller<'_> {
             let size = note_size(next - at);
             events.push(self.event(start, grid, at, size, false));
             fill(&mut events, at + size, next);
+        }
+        // A value is written where it changes, not over every note: 24
+        // labels a bar don't fit a phone.
+        let mut last = None;
+        for event in events.iter_mut().filter(|e| !e.rest) {
+            if event.label == last {
+                event.label = None;
+            } else {
+                last.clone_from(&event.label);
+            }
         }
         Group {
             tick: start,

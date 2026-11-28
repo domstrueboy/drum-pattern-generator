@@ -104,7 +104,7 @@ Ordered. One step at a time, each a commit.
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
    note-value row.
-2. **Step 5e** (notation with VexFlow).
+2. **Step 5f** (submenus: Hi-hat, Snare, Kick, Bar skip, Crash).
 
 ### 2. `drum-patterns`
 
@@ -245,7 +245,17 @@ across beats - a dotted pulse is written beat by beat. The snapshot
 carries one `Notation` a lap). 5d (the portrait screen without notation: Bars,
 Metronome, transport, instrument strips; one snapshot shared by every
 component; Bar skip, the sound, Color/Sound/Settings and the instrument
-buttons are shown but wait for 5f and steps 6-8).
+buttons are shown but wait for 5f and steps 6-8), 5e (VexFlow 5.0.0,
+pinned - the newer 5.x came in a burst of releases days old; Bravura
+bundled, so no network. A bar a row or all in one scrolled row, each
+bar the panel's width; a busy bar is drawn smaller rather than cut off.
+No staff lines or barlines. The count, values and konnakol are placed
+by where VexFlow put the notes. The playhead comes from Rust once a
+screen frame: `Glide` carries the engine's per-block report on at the
+tempo, never back; the lap it names picks which lap is drawn, so a
+dotted hi-hat changes each pass. Scrolled follows the bar playing. A
+value is written where it changes in a beat - over every note, 16th
+triplets overlapped).
 
 ### 6. Sounds
 

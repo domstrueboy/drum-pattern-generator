@@ -26,6 +26,10 @@ export interface Labels {
   mute: string;
   notation: string;
   kit: string;
+  /** Rust writes the count's "и" and konnakol's "т" and "к"; how this language writes them. */
+  letters: Record<string, string>;
+  /** The triplet mark in the note-value row: 8t. */
+  triplet: string;
 }
 
 const en: Labels = {
@@ -51,6 +55,8 @@ const en: Labels = {
   mute: "Mute",
   notation: "Notation",
   kit: "Kit",
+  letters: { "и": "&", "т": "t", "к": "k" },
+  triplet: "t",
 };
 
 const ru: Labels = {
@@ -76,6 +82,8 @@ const ru: Labels = {
   mute: "Заглушить",
   notation: "Нотация",
   kit: "Установка",
+  letters: {},
+  triplet: "т",
 };
 
 const labels: Labels = navigator.language.toLowerCase().startsWith("ru")

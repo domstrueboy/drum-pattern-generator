@@ -4,14 +4,13 @@ import { computed } from "vue";
 import BarsRow from "./components/BarsRow.vue";
 import KitPanel from "./components/KitPanel.vue";
 import MetronomeRow from "./components/MetronomeRow.vue";
+import NotationView from "./components/NotationView.vue";
 import TransportRow from "./components/TransportRow.vue";
-import { useLabels } from "./labels";
 import type { SessionState } from "./session";
 import { useRefresh, useSession } from "./useSession";
 
 const { state } = useSession();
 useRefresh();
-const t = useLabels();
 
 // The session's part, once an output has opened.
 const s = computed(() =>
@@ -26,7 +25,7 @@ const s = computed(() =>
       <BarsRow :s="s" />
       <MetronomeRow :s="s" />
       <TransportRow :s="s" />
-      <section class="notation" :aria-label="t.notation"></section>
+      <NotationView :s="s" />
       <KitPanel :s="s" />
     </template>
     <p v-if="state && !state.error" class="status">
@@ -50,6 +49,7 @@ const s = computed(() =>
   --hi-hat: rgb(34, 211, 238);
   --snare: rgb(226, 232, 240);
   --kick: rgb(251, 146, 60);
+  --crash: rgb(250, 204, 21);
   font-family: system-ui, sans-serif;
   color: var(--text);
   background: var(--bg);
@@ -121,11 +121,6 @@ button.on {
 .caption {
   font-size: 12px;
   color: var(--muted);
-}
-
-.notation {
-  min-height: 200px;
-  background: rgba(0, 0, 0, 0.35);
 }
 
 .status {

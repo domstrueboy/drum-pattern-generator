@@ -149,13 +149,11 @@ fn sixteenths_and_8th_triplets_in_one_beat_still_spell() {
 }
 
 #[test]
-fn labels_name_each_note_value() {
+fn a_value_is_written_where_it_changes_in_a_group() {
     assert_eq!(labels(&bar(&[0, 3])), ["16", "8."]);
-    assert_eq!(labels(&bar(&[0, 4, 8]))[..3], ["8t", "8t", "8t"]);
-    assert_eq!(
-        labels(&pulse(NoteValue::QuarterTriplet))[..3],
-        ["4t", "4t", "4t"]
-    );
+    assert_eq!(labels(&bar(&[0, 4, 8])), ["8t"]);
+    assert_eq!(labels(&bar(&[0, 3, 6, 9, 12])), ["16", "4"]);
+    assert_eq!(labels(&pulse(NoteValue::QuarterTriplet)), ["4t", "4t"]);
 }
 
 #[test]

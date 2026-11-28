@@ -284,3 +284,9 @@ fn reconnecting_keeps_every_setting_but_stops() {
         }
     );
 }
+
+#[test]
+fn a_stopped_session_has_no_playhead() {
+    let (mut session, _engine) = session();
+    assert_eq!(session.playhead(0.0), None);
+}

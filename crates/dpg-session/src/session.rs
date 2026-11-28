@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::command::{Command, Fader};
 use crate::notation::notation;
 use crate::parts::Parts;
+use crate::playhead::{Glide, Playhead, locate};
 use crate::snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, MixerView, Snapshot, SnareView,
 };
@@ -36,6 +37,7 @@ pub struct Session {
     laps: Vec<Pattern>,
     view: View,
     rng: StdRng,
+    glide: Glide,
 }
 
 impl Session {
@@ -52,6 +54,7 @@ impl Session {
             laps,
             view: View::default(),
             rng,
+            glide: Glide::default(),
         }
     }
 
@@ -224,6 +227,15 @@ impl Session {
                 .collect(),
             notation: self.laps.iter().map(notation).collect(),
         }
+    }
+
+    /// Where the notation shows the sound at `now`, a steady clock in
+    /// seconds; `None` while stopped. Asked once a screen frame.
+    pub fn playhead(&mut self, now: f64) -> Option<Playhead> {
+        let lap = &self.laps[0];
+        let per_second = self.remote.bpm() / 60.0 * f64::from(lap.time().ticks_per_beat());
+        let tick = self.glide.at(self.remote.position(), now, per_second)?;
+        Some(locate(tick, lap.len_ticks(), self.laps.len()))
     }
 
     fn change(&mut self, f: impl FnOnce(&mut Parts)) {

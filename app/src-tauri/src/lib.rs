@@ -11,7 +11,7 @@ use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use dpg_engine::{Engine, Remote};
 use dpg_hal::CpalOutput;
-use dpg_session::{Command, Session, Snapshot};
+use dpg_session::{Command, Playhead, Session, Snapshot};
 use serde::Serialize;
 use tauri::State;
 
@@ -134,6 +134,15 @@ fn snapshot(app: State<App>) -> AppSnapshot {
     })
 }
 
+/// Where the notation's line is: asked once a screen frame while playing,
+/// so it skips the snapshot and reopening a lost output.
+#[tauri::command]
+fn playhead(app: State<App>) -> Option<Playhead> {
+    let now = app.started.elapsed().as_secs_f64();
+    let mut shell = app.shell.lock().expect("no command panics holding it");
+    shell.audio.as_mut()?.session.playhead(now)
+}
+
 #[tauri::command]
 fn send(app: State<App>, command: Command) -> AppSnapshot {
     with_session(app, |session, now| session.apply(command, now))
@@ -152,7 +161,7 @@ pub fn run() {
             shell: Mutex::new(shell),
             started: Instant::now(),
         })
-        .invoke_handler(tauri::generate_handler![snapshot, send])
+        .invoke_handler(tauri::generate_handler![snapshot, send, playhead])
         .run(tauri::generate_context!())
         .expect("the window opens");
 }

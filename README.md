@@ -9,10 +9,10 @@ Android first, iOS later.
 Done: `drum-patterns` (every generator rule), `dpg-samples` (audio
 files to kit sounds), `dpg-hal` (the output) and `dpg-engine` (playing a
 groove: metronome, tap tempo, bar skip, crash, mixer). Now: the first
-real UI - `app/` plays a groove on a synthesized placeholder kit with
-Start/Stop and BPM, through `dpg-session`, which already holds every
-command the screen will send; the screen itself is next - see
-[PLAN.md](PLAN.md).
+real UI - `app/` shows the portrait screen with the groove in notation
+(VexFlow) and a playhead, played on a synthesized placeholder kit
+through `dpg-session`, which holds every command the screen sends; the
+instrument submenus are next - see [PLAN.md](PLAN.md).
 
 To run the app on a desktop: `pnpm install`, then `pnpm tauri dev`, in
 `app/` from a Windows terminal.
