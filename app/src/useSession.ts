@@ -39,23 +39,25 @@ export function useRefresh() {
  */
 export function usePlayhead(playing: () => boolean) {
   const playhead = ref<Playhead | null>(null);
-  let running = false;
-  async function frame() {
-    if (!running) return;
+  // Each Start begins a new loop; a loop from before a quick Stop and
+  // Start sees it is stale and ends, so only one ever asks.
+  let loop = 0;
+  async function frame(mine: number) {
+    if (mine !== loop) return;
     const p = await invoke<Playhead | null>("playhead");
-    if (!running) return;
+    if (mine !== loop) return;
     playhead.value = p;
-    requestAnimationFrame(frame);
+    requestAnimationFrame(() => frame(mine));
   }
   watch(
     playing,
     (on) => {
-      running = on;
-      if (on) requestAnimationFrame(frame);
+      const mine = ++loop;
+      if (on) requestAnimationFrame(() => frame(mine));
       else playhead.value = null;
     },
     { immediate: true },
   );
-  onUnmounted(() => (running = false));
+  onUnmounted(() => loop++);
   return playhead;
 }

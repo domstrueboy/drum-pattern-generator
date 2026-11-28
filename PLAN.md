@@ -104,8 +104,7 @@ Ordered. One step at a time, each a commit.
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
    note-value row, where the Crash button sits, no accents.
-2. **Step 5g** (on the phone: the playhead against the sound, touch
-   sizes, the screen off).
+2. **Step 5h** (landscape and the orientation button).
 
 ### 2. `drum-patterns`
 
@@ -265,7 +264,12 @@ UI keeps no copy of them; hi-hat accents added at the user's request,
 missed in the spec: off, on the beats or on the и - `hi_hat_accents`
 in `drum-patterns`, a field of `Groove` too; at the user's request
 too, 1 snare accent, and the first base kick always on the 1 - so
-snare accents keep off the 1).
+snare accents keep off the 1), 5g (on the test phone, 369 x ~760 CSS
+px: the screen fits without scrolling after tighter spacing, touch
+targets still 40 px; 48 kHz, 40 ms, 0 xruns; the groove plays on with
+the screen locked; the playhead matches the sound. Found and fixed: the
+line stuck after Stop and Start - the screen doesn't ask while stopped,
+so `Glide` now takes a report behind the last one as a new Start).
 
 ### 6. Sounds
 

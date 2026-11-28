@@ -97,8 +97,8 @@ button.on {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  padding: 8px;
+  gap: 6px;
+  padding: 6px 8px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -124,7 +124,7 @@ button.on {
 }
 
 .status {
-  margin: 4px 8px;
+  margin: 2px 8px;
   font-size: 11px;
   color: var(--muted);
 }

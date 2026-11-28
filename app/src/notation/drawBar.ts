@@ -29,10 +29,10 @@ const SCALE = 1.3;
 const MARGIN = 16;
 
 /** The drawing's height in VexFlow units: beams and brackets above, the kick below. */
-const HEIGHT = 120;
+const HEIGHT = 112;
 
 /** Where the invisible staff sits: its top line is 40 below this. */
-const STAVE_Y = 30;
+const STAVE_Y = 26;
 
 /** Each instrument's place, lowest first, and its notehead. */
 const KEYS: [Instrument, string][] = [

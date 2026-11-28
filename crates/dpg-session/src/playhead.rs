@@ -35,7 +35,9 @@ impl Glide {
     /// The tick to show at `now`, in seconds on a steady clock, given the
     /// engine's latest report and the tempo in ticks a second; `None`
     /// while stopped. Never moves back while playing: a report seen late
-    /// would otherwise pull the line back a little.
+    /// would otherwise pull the line back a little. A report behind the
+    /// last one is a new Start - the screen doesn't ask while stopped, so
+    /// the stop itself may never be seen.
     pub fn at(&mut self, heard: Option<f64>, now: f64, ticks_per_second: f64) -> Option<f64> {
         let Some(heard) = heard else {
             self.report = None;
@@ -43,11 +45,11 @@ impl Glide {
         };
         let since = match self.report {
             Some((tick, seen)) if tick == heard => now - seen,
-            Some(_) => {
+            Some((tick, _)) if heard > tick => {
                 self.report = Some((heard, now));
                 0.0
             }
-            None => {
+            _ => {
                 self.report = Some((heard, now));
                 self.shown = heard;
                 0.0

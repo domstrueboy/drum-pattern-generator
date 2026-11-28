@@ -52,6 +52,15 @@ fn start_again_begins_from_the_new_report() {
 }
 
 #[test]
+fn a_start_after_an_unseen_stop_begins_again() {
+    let mut glide = Glide::default();
+    glide.at(Some(90.0), 1.0, SPEED);
+    glide.at(Some(90.0), 1.05, SPEED);
+    assert_eq!(glide.at(Some(2.0), 3.0, SPEED), Some(2.0));
+    assert_eq!(glide.at(Some(3.0), 3.04, SPEED), Some(3.0));
+}
+
+#[test]
 fn laps_take_turns_one_a_pass() {
     assert_eq!(locate(10.5, 48, 3), Playhead { lap: 0, tick: 10.5 });
     assert_eq!(locate(48.0, 48, 3), Playhead { lap: 1, tick: 0.0 });

@@ -62,7 +62,7 @@ const t = useLabels();
 .faders {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   justify-content: center;
 }
 
@@ -85,7 +85,7 @@ const t = useLabels();
 .start {
   width: 100%;
   max-width: 140px;
-  height: 56px;
+  height: 48px;
   font-size: 18px;
   font-weight: 600;
   background: var(--start);

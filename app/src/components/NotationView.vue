@@ -198,9 +198,9 @@ function value(label: string) {
 }
 
 .count {
-  height: 26px;
+  height: 22px;
   font-size: 20px;
-  line-height: 26px;
+  line-height: 22px;
   color: var(--muted);
 }
 
@@ -220,9 +220,9 @@ function value(label: string) {
 }
 
 .konnakol {
-  height: 26px;
+  height: 22px;
   font-size: 20px;
-  line-height: 22px;
+  line-height: 20px;
   color: var(--muted);
 }
 
