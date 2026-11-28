@@ -277,7 +277,6 @@ fn reconnecting_keeps_every_setting_but_stops() {
             Command::Ghosts { count: 2 },
             Command::MetronomeSound,
             Command::SoundPreset {
-                instrument: InstrumentName::Kick,
                 preset: PresetName::Metal,
             },
         ],
@@ -331,12 +330,9 @@ fn the_sound_button_steps_through_the_six_and_round() {
 }
 
 #[test]
-fn a_new_session_plays_rock_on_every_instrument() {
+fn a_new_session_plays_the_rock_kit() {
     let (session, _engine) = session();
-    let s = session.snapshot();
-    assert_eq!(s.sounds.hi_hat, PresetName::Rock);
-    assert_eq!(s.sounds.snare, PresetName::Rock);
-    assert_eq!(s.sounds.kick, PresetName::Rock);
+    assert_eq!(session.snapshot().kit, PresetName::Rock);
     assert_eq!(session.kit().rate(), 48_000);
     for instrument in Instrument::ALL {
         assert!(session.kit().sound(instrument).is_some(), "{instrument:?}");
@@ -344,48 +340,21 @@ fn a_new_session_plays_rock_on_every_instrument() {
 }
 
 #[test]
-fn each_instrument_chooses_its_own_preset() {
+fn one_choice_changes_the_whole_kit() {
     let (mut session, _engine) = session();
     let s = apply(
         &mut session,
-        &[
-            Command::SoundPreset {
-                instrument: InstrumentName::Snare,
-                preset: PresetName::Jazz,
-            },
-            Command::SoundPreset {
-                instrument: InstrumentName::Kick,
-                preset: PresetName::Electro,
-            },
-        ],
+        &[Command::SoundPreset {
+            preset: PresetName::Electro,
+        }],
     );
-    assert_eq!(s.sounds.hi_hat, PresetName::Rock);
-    assert_eq!(s.sounds.snare, PresetName::Jazz);
-    assert_eq!(s.sounds.kick, PresetName::Electro);
-    let kit = session.kit();
-    let expected =
-        dpg_samples::preset_sound(dpg_samples::Preset::Electro, Instrument::Kick, 48_000);
-    assert_eq!(kit.sound(Instrument::Kick), Some(&expected));
-}
-
-#[test]
-fn the_crash_follows_the_hi_hat_and_has_no_choice_of_its_own() {
-    let (mut session, _engine) = session();
-    let s = apply(
-        &mut session,
-        &[
-            Command::SoundPreset {
-                instrument: InstrumentName::HiHat,
-                preset: PresetName::HipHop,
-            },
-            Command::SoundPreset {
-                instrument: InstrumentName::Crash,
-                preset: PresetName::Metal,
-            },
-        ],
-    );
-    assert_eq!(s.sounds.hi_hat, PresetName::HipHop);
-    let expected =
-        dpg_samples::preset_sound(dpg_samples::Preset::HipHop, Instrument::Crash, 48_000);
-    assert_eq!(session.kit().sound(Instrument::Crash), Some(&expected));
+    assert_eq!(s.kit, PresetName::Electro);
+    for instrument in Instrument::ALL {
+        let expected = dpg_samples::preset_sound(dpg_samples::Preset::Electro, instrument, 48_000);
+        assert_eq!(
+            session.kit().sound(instrument),
+            Some(&expected),
+            "{instrument:?}"
+        );
+    }
 }

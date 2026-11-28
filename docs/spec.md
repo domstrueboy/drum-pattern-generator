@@ -207,8 +207,8 @@ the next one, and after the last back to the first.
 
 ## Sound menu
 
-Five presets for each of hi-hat, snare and kick, chosen separately, and
-switchable while the pattern plays:
+Five preset kits; one choice switches the whole kit - hi-hat, snare,
+kick and crash together - also while the pattern plays:
 
 | Preset | Character |
 |---|---|
@@ -218,8 +218,9 @@ switchable while the pattern plays:
 | Jazz | soft hits, little attack - brushes or rods |
 | Metal | aggressive triggered drums, hard attack |
 
-Users can also pick their own samples. Recording happens outside the app
-for now.
+Users can also make their own kits from their own samples and save them;
+a saved kit is listed with the presets and chosen the same way.
+Recording happens outside the app for now.
 
 Accents and ghost notes: each instrument holds 1 or 2 samples, and the
 user can assign each one.

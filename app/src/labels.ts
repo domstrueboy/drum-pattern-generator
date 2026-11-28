@@ -40,7 +40,7 @@ export interface Labels {
   triplet: string;
   back: string;
   presets: Record<Preset, string>;
-  crashFollows: string;
+  kits: string;
   rotate: string;
   fewer: string;
   plenty: string;
@@ -101,7 +101,7 @@ const en: Labels = {
   triplet: "t",
   back: "Back",
   presets: { rock: "Rock", hipHop: "Hip-hop", electro: "Electro", jazz: "Jazz", metal: "Metal" },
-  crashFollows: "The crash follows the hi-hat.",
+  kits: "Kit",
   rotate: "Turn the screen",
   fewer: "Fewer",
   plenty: "More",
@@ -161,7 +161,7 @@ const ru: Labels = {
   triplet: "т",
   back: "Назад",
   presets: { rock: "Рок", hipHop: "Хип-хоп", electro: "Электро", jazz: "Джаз", metal: "Метал" },
-  crashFollows: "Крэш звучит в стиле хай-хета.",
+  kits: "Установка",
   rotate: "Повернуть экран",
   fewer: "Меньше",
   plenty: "Больше",

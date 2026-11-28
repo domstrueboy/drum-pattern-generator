@@ -20,7 +20,7 @@ export type Command =
   | { type: "metronome" }
   | { type: "subdivision"; value: Subdivision }
   | { type: "metronomeSound" }
-  | { type: "soundPreset"; instrument: Instrument; preset: Preset }
+  | { type: "soundPreset"; preset: Preset }
   | { type: "bars"; count: number }
   | { type: "view"; view: View }
   | { type: "barSkip"; play: number; skip: number }
@@ -107,8 +107,8 @@ export interface SessionState {
   metronome: boolean;
   subdivision: Subdivision;
   metronomeSound: ClickSound;
-  /** The Sound menu's choices; the crash follows the hi-hat. */
-  sounds: Record<DrumInstrument, Preset>;
+  /** The kit's style, from the Sound menu. */
+  kit: Preset;
   bars: number;
   view: View;
   barSkip: { play: number; skip: number } | null;

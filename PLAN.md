@@ -308,15 +308,16 @@ blocks.
 | Sub-step | What |
 |---|---|
 | 6a | **Metronome sounds:** the five the spec names - click, Ableton-style click, cowbell, high clave (CR-78 style), bongo - and an electronic beep the user asked for (like their Nux DP-2000's), synthesized, each with a higher one for the bar's first beat. The 🔊 button steps through them and shows the name. |
-| 6b | **A preset per instrument** in `dpg-session`: hi-hat, snare and kick each choose one, the crash follows the hi-hat's; the session builds the kit and sends it, also while playing. The placeholder kit becomes the first preset. |
+| 6b | **A preset per instrument** in `dpg-session`: hi-hat, snare and kick each choose one, the crash follows the hi-hat's; the session builds the kit and sends it, also while playing. The placeholder kit becomes the first preset. (Changed after 6d at the user's request: one choice for the whole kit.) |
 | 6c | **The five presets, synthesized** in `dpg-samples` at the output's rate - kick, snare, hi-hat, crash each: Electro (808-style) and Hip-hop (909-style) for good; Rock, Jazz and Metal as stand-ins until the author's recordings replace them. |
 | 6d | **Sound menu:** opens from Sound, like the others; a row per instrument with its five presets. |
-| 6e | **Your own samples:** per instrument, pick 1 or 2 files from the phone (dialog plugin: a `content://` link; fs plugin reads it in Rust, as the spike did), decoded on a worker with `Sound::load`, then into the kit. The SSD5 test kit loads this way. |
+| 6e | **Your own kits:** pick a file (1 or 2: normal, ghost) for each instrument from the phone (dialog plugin: a `content://` link; fs plugin reads it in Rust, as the spike did), decoded on a worker with `Sound::load`; name the kit and save it - the files copied into the app's own storage - so it is listed with the presets in the Sound menu. The SSD5 test kit is the first. |
 | 6f | **On the phone:** switching while playing, your own samples from storage, the five clicks by ear; fix what's found. |
 
 Decided with the user (2026-11-28): Rock, Jazz and Metal start as
 synthesized stand-ins, so all five buttons work and nothing licensed
-ships; the crash follows the hi-hat's preset; 6e adds
+ships; one choice switches the whole kit (the user, after 6d - it
+replaced "the crash follows the hi-hat"); 6e adds
 `tauri-plugin-dialog` and `tauri-plugin-fs`.
 
 Not in step 6: keeping choices and picked samples across launches (step
@@ -340,7 +341,9 @@ placeholder kit is gone. `render_presets` (ignored test) writes every
 sound and a groove a style to WAV under `samples/` for listening), 6d
 (the Sound button opens a menu where the others do: a row of five per
 instrument, the chosen one lit, a note that the crash follows the
-hi-hat).
+hi-hat). After trying it the user asked for one choice for the whole
+kit: the session keeps one `Preset`, the menu one row of five, and
+kits of the user's own will join that list (6e)).
 
 ### 7. Look
 

@@ -14,7 +14,6 @@ use crate::parts::Parts;
 use crate::playhead::{Glide, Playhead, locate};
 use crate::snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, LIMITS, MixerView, Snapshot, SnareView,
-    SoundsView,
 };
 
 #[cfg(test)]
@@ -40,39 +39,18 @@ pub struct Session {
     view: View,
     rng: StdRng,
     glide: Glide,
-    presets: Presets,
+    preset: Preset,
     kit: Kit,
 }
 
-/// The Sound menu's choices. The crash follows the hi-hat.
-#[derive(Debug, Clone, Copy, Default)]
-struct Presets {
-    hi_hat: Preset,
-    snare: Preset,
-    kick: Preset,
-}
-
-impl Presets {
-    fn of(&self, instrument: Instrument) -> Preset {
-        match instrument {
-            Instrument::HiHat | Instrument::Crash => self.hi_hat,
-            Instrument::Snare => self.snare,
-            Instrument::Kick => self.kick,
-        }
+/// The whole kit in one style, made at `rate` off the audio thread and
+/// handed over whole.
+fn preset_kit(preset: Preset, rate: u32) -> Kit {
+    let mut kit = Kit::new(rate);
+    for instrument in Instrument::ALL {
+        kit.set(instrument, preset_sound(preset, instrument, rate));
     }
-
-    /// The whole kit at `rate`. Made off the audio thread, then handed
-    /// over whole.
-    fn kit(&self, rate: u32) -> Kit {
-        let mut kit = Kit::new(rate);
-        for instrument in Instrument::ALL {
-            kit.set(
-                instrument,
-                preset_sound(self.of(instrument), instrument, rate),
-            );
-        }
-        kit
-    }
+    kit
 }
 
 impl Session {
@@ -83,8 +61,8 @@ impl Session {
         let parts = Parts::new(&mut rng);
         let laps = parts.build_laps();
         remote.set_laps(laps.clone());
-        let presets = Presets::default();
-        let kit = presets.kit(remote.rate());
+        let preset = Preset::default();
+        let kit = preset_kit(preset, remote.rate());
         send_kit(&mut remote, &kit);
         Self {
             remote,
@@ -93,7 +71,7 @@ impl Session {
             view: View::default(),
             rng,
             glide: Glide::default(),
-            presets,
+            preset,
             kit,
         }
     }
@@ -130,7 +108,7 @@ impl Session {
         }
         remote.set_laps(self.laps.clone());
         // The new output may run at another rate: the kit is made afresh.
-        self.kit = self.presets.kit(remote.rate());
+        self.kit = preset_kit(self.preset, remote.rate());
         send_kit(&mut remote, &self.kit);
         std::mem::replace(&mut self.remote, remote)
     }
@@ -153,8 +131,8 @@ impl Session {
             }
             Command::Metronome => remote.set_metronome(!remote.metronome()),
             Command::MetronomeSound => remote.set_click_sound(remote.click_sound().next()),
-            Command::SoundPreset { instrument, preset } => {
-                self.set_preset(instrument.into(), preset.into());
+            Command::SoundPreset { preset } => {
+                self.set_preset(preset.into());
             }
             Command::Subdivision { value } => remote.set_subdivision(value.into()),
             Command::View { view } => self.view = view,
@@ -229,11 +207,7 @@ impl Session {
             metronome: remote.metronome(),
             subdivision: remote.subdivision().into(),
             metronome_sound: remote.click_sound().into(),
-            sounds: SoundsView {
-                hi_hat: self.presets.hi_hat.into(),
-                snare: self.presets.snare.into(),
-                kick: self.presets.kick.into(),
-            },
+            kit: self.preset.into(),
             bars: parts.bars,
             view: self.view,
             bar_skip: remote.bar_skip().map(|s| BarSkipView {
@@ -302,29 +276,13 @@ impl Session {
         Some(locate(tick, lap.len_ticks(), self.laps.len()))
     }
 
-    /// Gives `instrument` the sound of `preset` - the crash with the
-    /// hi-hat - and sends the kit, also while playing. The crash alone is
-    /// not a choice and is left as it is.
-    fn set_preset(&mut self, instrument: Instrument, preset: Preset) {
-        let changed: &[Instrument] = match instrument {
-            Instrument::HiHat => {
-                self.presets.hi_hat = preset;
-                &[Instrument::HiHat, Instrument::Crash]
-            }
-            Instrument::Snare => {
-                self.presets.snare = preset;
-                &[Instrument::Snare]
-            }
-            Instrument::Kick => {
-                self.presets.kick = preset;
-                &[Instrument::Kick]
-            }
-            Instrument::Crash => return,
-        };
-        let rate = self.kit.rate();
-        for &each in changed {
-            self.kit.set(each, preset_sound(preset, each, rate));
+    /// Plays the whole kit in `preset`'s style, also while playing.
+    fn set_preset(&mut self, preset: Preset) {
+        if preset == self.preset {
+            return;
         }
+        self.preset = preset;
+        self.kit = preset_kit(preset, self.kit.rate());
         send_kit(&mut self.remote, &self.kit);
     }
 

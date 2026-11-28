@@ -24,8 +24,8 @@ pub struct Snapshot {
     pub subdivision: SubdivisionName,
     /// The metronome's sound.
     pub metronome_sound: ClickSoundName,
-    /// The Sound menu's choices.
-    pub sounds: SoundsView,
+    /// The kit's style, from the Sound menu.
+    pub kit: PresetName,
     /// The pattern's length in bars.
     pub bars: u8,
     /// Stacked or scrolled bars.
@@ -76,18 +76,6 @@ pub const LIMITS: Limits = Limits {
     ghost_levels: drum_patterns::GHOST_LEVELS,
     extra_kick_levels: drum_patterns::EXTRA_KICK_LEVELS,
 };
-
-/// Each instrument's kit style; the crash follows the hi-hat.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SoundsView {
-    /// The hi-hat's, and the crash's.
-    pub hi_hat: PresetName,
-    /// The snare's.
-    pub snare: PresetName,
-    /// The kick's.
-    pub kick: PresetName,
-}
 
 /// Bar skip's choice.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

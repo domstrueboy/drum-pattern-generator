@@ -56,11 +56,8 @@ pub enum Command {
     },
     /// The metronome's next sound; after the last, the first.
     MetronomeSound,
-    /// An instrument's kit style, from the Sound menu. The crash has no
-    /// choice of its own: it follows the hi-hat.
+    /// The kit's style, from the Sound menu: every instrument at once.
     SoundPreset {
-        /// The hi-hat, snare or kick.
-        instrument: InstrumentName,
         /// The style.
         preset: PresetName,
     },

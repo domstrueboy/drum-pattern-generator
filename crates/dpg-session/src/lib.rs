@@ -22,5 +22,5 @@ pub use playhead::{Glide, MAX_GLIDE, Playhead, locate};
 pub use session::{Session, View};
 pub use snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, LIMITS, Limits, MixerView, Snapshot,
-    SnareView, SoundsView,
+    SnareView,
 };
