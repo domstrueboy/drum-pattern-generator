@@ -100,11 +100,12 @@ Ordered. One step at a time, each a commit.
 
 ### Next session - start here
 
-1. The spec's *Open questions* 1-6 - for the author: the crash in a
+1. The spec's *Open questions* 1-8 - for the author: the crash in a
    silent bar, the crash menu's first choice, getting back to easy
    ghost notes, hearing other accents, Random's starting count, the
-   note-value row.
-2. **Step 5f** (submenus: Hi-hat, Snare, Kick, Bar skip, Crash).
+   note-value row, where the Crash button sits, no accents.
+2. **Step 5g** (on the phone: the playhead against the sound, touch
+   sizes, the screen off).
 
 ### 2. `drum-patterns`
 
@@ -255,7 +256,12 @@ screen frame: `Glide` carries the engine's per-block report on at the
 tempo, never back; the lap it names picks which lap is drawn, so a
 dotted hi-hat changes each pass. Scrolled follows the bar playing. A
 value is written where it changes in a beat - over every note, 16th
-triplets overlapped).
+triplets overlapped), 5f (the five submenus open beside the instrument
+buttons, over the faders and photo, and scroll into view; the buttons
+keep their rows. Bar skip is a toggle: off, it opens its menu; on, it
+turns off. A Bar skip or Crash choice closes its menu; the instrument
+menus stay until Back. The snapshot reports the menus' limits, so the
+UI keeps no copy of them).
 
 ### 6. Sounds
 

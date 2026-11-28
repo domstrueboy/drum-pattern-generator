@@ -226,6 +226,8 @@ fn the_snapshot_reads_as_the_ui_expects() {
     let first = &json["notation"][0]["bars"][0][0];
     assert_eq!(first["events"][0]["label"], "8");
     assert_eq!(first["tuplet"], serde_json::Value::Null);
+    assert_eq!(json["limits"]["variants"], 24);
+    assert_eq!(json["limits"]["ghostLevels"], 4);
 }
 
 #[test]

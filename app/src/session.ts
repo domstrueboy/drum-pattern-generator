@@ -131,6 +131,7 @@ export interface SessionState {
   ticksPerBar: number;
   laps: Hit[][];
   notation: Notation[];
+  limits: { count: number; variants: number; ghostLevels: number; extraKickLevels: number };
 }
 
 export type Snapshot = OutputState & Partial<SessionState>;

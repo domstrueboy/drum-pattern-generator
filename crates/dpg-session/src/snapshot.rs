@@ -44,7 +44,31 @@ pub struct Snapshot {
     pub laps: Vec<Vec<HitView>>,
     /// Each lap spelled as notation, ready to draw.
     pub notation: Vec<Notation>,
+    /// How far the menus' counts and levels go.
+    pub limits: Limits,
 }
+
+/// The menus' ranges, so the UI never keeps its own copy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Limits {
+    /// Most ghost notes, accents or kicks a bar.
+    pub count: u8,
+    /// Most variants Random holds.
+    pub variants: u8,
+    /// Ghost notes' top level.
+    pub ghost_levels: u8,
+    /// Extra kicks' top level.
+    pub extra_kick_levels: u8,
+}
+
+/// The ranges `dpg-session` and `drum-patterns` keep to.
+pub const LIMITS: Limits = Limits {
+    count: crate::parts::MAX_COUNT,
+    variants: drum_patterns::Variants::MAX,
+    ghost_levels: drum_patterns::GHOST_LEVELS,
+    extra_kick_levels: drum_patterns::EXTRA_KICK_LEVELS,
+};
 
 /// Bar skip's choice.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

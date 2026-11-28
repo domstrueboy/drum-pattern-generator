@@ -18,5 +18,6 @@ pub use parts::{Ladder, MAX_COUNT, Parts, RANDOM_COUNT, Set};
 pub use playhead::{Glide, MAX_GLIDE, Playhead, locate};
 pub use session::{Session, View};
 pub use snapshot::{
-    BarSkipView, ChannelView, HiHatView, HitView, KickView, MixerView, Snapshot, SnareView,
+    BarSkipView, ChannelView, HiHatView, HitView, KickView, LIMITS, Limits, MixerView, Snapshot,
+    SnareView,
 };

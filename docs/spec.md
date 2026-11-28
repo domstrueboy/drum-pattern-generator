@@ -267,3 +267,8 @@ For the author. Answers replace the question with the rule.
    `8t`), or one over each group of notes? For now one on a beat's first
    note and wherever the value changes in the beat: over every note,
    24 labels a bar overlap on a phone.
+7. **Where the Crash button sits.** The screen's table has no place for
+   it. For now it's in the Bars row after Bar skip - both count bars of
+   playback - and its menu opens where the instrument menus do.
+8. **No accents.** The Accents menu lists 2, 3 or 4, but a groove
+   starts with none. For now the menu has **None** too.

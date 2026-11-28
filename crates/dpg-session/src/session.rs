@@ -12,7 +12,7 @@ use crate::notation::notation;
 use crate::parts::Parts;
 use crate::playhead::{Glide, Playhead, locate};
 use crate::snapshot::{
-    BarSkipView, ChannelView, HiHatView, HitView, KickView, MixerView, Snapshot, SnareView,
+    BarSkipView, ChannelView, HiHatView, HitView, KickView, LIMITS, MixerView, Snapshot, SnareView,
 };
 
 #[cfg(test)]
@@ -226,6 +226,7 @@ impl Session {
                 })
                 .collect(),
             notation: self.laps.iter().map(notation).collect(),
+            limits: LIMITS,
         }
     }
 
