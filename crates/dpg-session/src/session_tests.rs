@@ -2,7 +2,8 @@ use dpg_engine::{DEFAULT_BPM, Engine};
 
 use super::*;
 use crate::names::{
-    FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName, SubdivisionName,
+    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName,
+    SubdivisionName,
 };
 
 /// A session over an engine that is never played - the remote's settings
@@ -274,6 +275,7 @@ fn reconnecting_keeps_every_setting_but_stops() {
                 instrument: InstrumentName::Snare,
             },
             Command::Ghosts { count: 2 },
+            Command::MetronomeSound,
         ],
     );
     let (_new_engine, remote) = Engine::new(44_100);
@@ -311,4 +313,14 @@ fn hi_hat_accents_go_on_the_beats_and_are_spelled() {
         .map(|h| h.tick)
         .collect();
     assert_eq!(accented, [0, 12, 24, 36]);
+}
+
+#[test]
+fn the_sound_button_steps_through_the_six_and_round() {
+    let (mut session, _engine) = session();
+    assert_eq!(session.snapshot().metronome_sound, ClickSoundName::Click);
+    let s = apply(&mut session, &[Command::MetronomeSound; 5]);
+    assert_eq!(s.metronome_sound, ClickSoundName::Electronic);
+    let s = apply(&mut session, &[Command::MetronomeSound]);
+    assert_eq!(s.metronome_sound, ClickSoundName::Click);
 }

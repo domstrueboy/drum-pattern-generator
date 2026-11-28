@@ -3,6 +3,7 @@
 
 export type Pulse = "4" | "8" | "16" | "4t" | "8t" | "16t" | "4." | "8.";
 export type Subdivision = "4" | "8" | "8t" | "16";
+export type ClickSound = "click" | "ableton" | "cowbell" | "clave" | "bongo" | "electronic";
 export type Feel = "basic" | "half" | "double";
 export type HiHatAccents = "off" | "beats" | "offbeats";
 export type Instrument = "crash" | "hiHat" | "snare" | "kick";
@@ -17,6 +18,7 @@ export type Command =
   | { type: "tap" }
   | { type: "metronome" }
   | { type: "subdivision"; value: Subdivision }
+  | { type: "metronomeSound" }
   | { type: "bars"; count: number }
   | { type: "view"; view: View }
   | { type: "barSkip"; play: number; skip: number }
@@ -102,6 +104,7 @@ export interface SessionState {
   bpm: number;
   metronome: boolean;
   subdivision: Subdivision;
+  metronomeSound: ClickSound;
   bars: number;
   view: View;
   barSkip: { play: number; skip: number } | null;

@@ -55,6 +55,14 @@ fn the_metronome_starts_off_on_quarters() {
 }
 
 #[test]
+fn the_click_sound_starts_as_the_click_and_can_change() {
+    let (_engine, remote) = Engine::new(48_000);
+    assert_eq!(remote.click_sound(), ClickSound::Click);
+    remote.set_click_sound(ClickSound::Electronic);
+    assert_eq!(remote.click_sound(), ClickSound::Electronic);
+}
+
+#[test]
 #[should_panic(expected = "every lap the same length")]
 fn laps_must_match() {
     let (_engine, mut remote) = Engine::new(48_000);

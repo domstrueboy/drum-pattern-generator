@@ -1,7 +1,7 @@
 //! The model's choices under the names the screen uses - `8.`, `8t`,
 //! `half` - so commands and snapshots read like the spec's menus.
 
-use dpg_engine::Subdivision;
+use dpg_engine::{ClickSound, Subdivision};
 use drum_patterns::{Feel, HiHatAccents, HitKind, Instrument, NoteValue};
 use serde::{Deserialize, Serialize};
 
@@ -70,6 +70,18 @@ names! {
         Off = "off" => HiHatAccents::Off,
         Beats = "beats" => HiHatAccents::Beats,
         Offbeats = "offbeats" => HiHatAccents::Offbeats,
+    }
+}
+
+names! {
+    /// The metronome's sound, as the Sound button steps through them.
+    ClickSoundName => ClickSound {
+        Click = "click" => ClickSound::Click,
+        Ableton = "ableton" => ClickSound::Ableton,
+        Cowbell = "cowbell" => ClickSound::Cowbell,
+        Clave = "clave" => ClickSound::Clave,
+        Bongo = "bongo" => ClickSound::Bongo,
+        Electronic = "electronic" => ClickSound::Electronic,
     }
 }
 

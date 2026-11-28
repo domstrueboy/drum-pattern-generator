@@ -73,6 +73,7 @@ impl Session {
         remote.set_bpm(old.bpm());
         remote.set_metronome(old.metronome());
         remote.set_subdivision(old.subdivision());
+        remote.set_click_sound(old.click_sound());
         remote.set_bar_skip(old.bar_skip());
         remote.set_crash(old.crash());
         let mix = old.mix().snapshot();
@@ -103,6 +104,7 @@ impl Session {
                 self.remote.tap(now);
             }
             Command::Metronome => remote.set_metronome(!remote.metronome()),
+            Command::MetronomeSound => remote.set_click_sound(remote.click_sound().next()),
             Command::Subdivision { value } => remote.set_subdivision(value.into()),
             Command::View { view } => self.view = view,
             Command::BarSkip { play, skip } => remote.set_bar_skip(BarSkip::new(play, skip)),
@@ -175,6 +177,7 @@ impl Session {
             bpm: remote.bpm(),
             metronome: remote.metronome(),
             subdivision: remote.subdivision().into(),
+            metronome_sound: remote.click_sound().into(),
             bars: parts.bars,
             view: self.view,
             bar_skip: remote.bar_skip().map(|s| BarSkipView {

@@ -11,8 +11,9 @@ use dpg_samples::Kit;
 use drum_patterns::{HitKind, Instrument, Pattern, TimeSignature};
 use rtrb::{Consumer, Producer, RingBuffer};
 
+use crate::clicks::{ClickSound, Clicks};
 use crate::clock::Clock;
-use crate::metronome::{Click, Clicks, Subdivision, click_at};
+use crate::metronome::{Click, Subdivision, click_at};
 use crate::mix::{CHANNELS, Channel, MixControls, gains};
 use crate::remote::Remote;
 use crate::rules::{BarSkip, CrashRule};
@@ -30,9 +31,11 @@ pub const DEFAULT_BPM: f64 = 120.0;
 const KIT_SLOTS: usize = 4;
 const KINDS: [HitKind; 3] = [HitKind::Accent, HitKind::Normal, HitKind::Ghost];
 const IDS_PER_KIT: usize = Instrument::ALL.len() * KINDS.len();
-/// The clicks' ids follow every kit's.
+/// The clicks' ids follow every kit's: each sound's bar, beat and
+/// subdivision click in turn.
 const FIRST_CLICK: usize = KIT_SLOTS * IDS_PER_KIT;
 const CLICKS: [Click; 3] = [Click::Bar, Click::Beat, Click::Between];
+const CLICK_IDS: usize = ClickSound::ALL.len() * CLICKS.len();
 /// How hard the crash rule hits - by ear in 4g.
 const CRASH_KIND: HitKind = HitKind::Accent;
 
@@ -50,6 +53,7 @@ pub(crate) struct Shared {
     pub(crate) metronome: AtomicBool,
     /// A [`Subdivision`]'s index.
     pub(crate) subdivision: AtomicU8,
+    pub(crate) click_sound: AtomicU8,
     pub(crate) bar_skip: AtomicU16,
     pub(crate) crash: AtomicU16,
 }
@@ -99,6 +103,7 @@ impl Engine {
             mix: MixControls::default(),
             metronome: AtomicBool::new(false),
             subdivision: AtomicU8::new(Subdivision::default().index()),
+            click_sound: AtomicU8::new(ClickSound::default().index()),
             bar_skip: AtomicU16::new(BarSkip::pack(None)),
             crash: AtomicU16::new(CrashRule::default().pack()),
         });
@@ -189,6 +194,7 @@ impl Engine {
             .metronome
             .load(Ordering::Relaxed)
             .then(|| Subdivision::from_index(shared.subdivision.load(Ordering::Relaxed)));
+        let sound = ClickSound::from_index(shared.click_sound.load(Ordering::Relaxed));
         let skip = BarSkip::unpack(shared.bar_skip.load(Ordering::Relaxed));
         let crash = CrashRule::unpack(shared.crash.load(Ordering::Relaxed));
         let Self {
@@ -241,9 +247,9 @@ impl Engine {
                 && let Some(click) = click_at(t.tick, time, subdivision)
             {
                 voices.trigger(Trigger {
-                    sample: click_id(click),
+                    sample: click_id(sound, click),
                     channel: Channel::Metronome,
-                    gain: clicks.sound(click).1,
+                    gain: clicks.sound(sound, click).1,
                     offset: t.offset,
                 });
             }
@@ -306,12 +312,13 @@ fn sample_id(slot: usize, instrument: Instrument, kind: HitKind) -> SampleId {
     SampleId((slot * IDS_PER_KIT + instrument * KINDS.len() + kind) as u32)
 }
 
-fn click_id(click: Click) -> SampleId {
+fn click_id(sound: ClickSound, click: Click) -> SampleId {
     let index = CLICKS
         .iter()
         .position(|&c| c == click)
         .expect("CLICKS lists every click");
-    SampleId((FIRST_CLICK + index) as u32)
+    let sound = usize::from(sound.index());
+    SampleId((FIRST_CLICK + sound * CLICKS.len() + index) as u32)
 }
 
 /// The kit slot `id` plays from; past the last for a click.
@@ -321,8 +328,10 @@ fn slot_of(id: SampleId) -> usize {
 
 /// The samples behind `id`; empty if its kit or sound is gone.
 fn lookup<'a>(kits: &'a [Option<Kit>; KIT_SLOTS], clicks: &'a Clicks, id: SampleId) -> &'a [f32] {
-    if let Some(&click) = CLICKS.get((id.0 as usize).wrapping_sub(FIRST_CLICK)) {
-        return clicks.sound(click).0;
+    let click = (id.0 as usize).wrapping_sub(FIRST_CLICK);
+    if click < CLICK_IDS {
+        let sound = ClickSound::ALL[click / CLICKS.len()];
+        return clicks.sound(sound, CLICKS[click % CLICKS.len()]).0;
     }
     let n = id.0 as usize % IDS_PER_KIT;
     let (instrument, kind) = (Instrument::ALL[n / KINDS.len()], KINDS[n % KINDS.len()]);

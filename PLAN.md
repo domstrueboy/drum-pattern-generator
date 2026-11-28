@@ -287,6 +287,35 @@ where the character allows (Electro, Hip-hop, clicks), samples we may
 ship otherwise (the author recording a kit is the best source). User
 sample import.
 
+Every sound is made or decoded off the audio thread and handed over
+whole (rule 4): the session builds a `Kit` from each instrument's choice
+and sends it with `Remote::set_kit`, which already swaps kits between
+blocks.
+
+| Sub-step | What |
+|---|---|
+| 6a | **Metronome sounds:** the five the spec names - click, Ableton-style click, cowbell, high clave (CR-78 style), bongo - and an electronic beep the user asked for (like their Nux DP-2000's), synthesized, each with a higher one for the bar's first beat. The 🔊 button steps through them and shows the name. |
+| 6b | **A preset per instrument** in `dpg-session`: hi-hat, snare and kick each choose one, the crash follows the hi-hat's; the session builds the kit and sends it, also while playing. The placeholder kit becomes the first preset. |
+| 6c | **The five presets, synthesized** in `dpg-samples` at the output's rate - kick, snare, hi-hat, crash each: Electro (808-style) and Hip-hop (909-style) for good; Rock, Jazz and Metal as stand-ins until the author's recordings replace them. |
+| 6d | **Sound menu:** opens from Sound, like the others; a row per instrument with its five presets. |
+| 6e | **Your own samples:** per instrument, pick 1 or 2 files from the phone (dialog plugin: a `content://` link; fs plugin reads it in Rust, as the spike did), decoded on a worker with `Sound::load`, then into the kit. The SSD5 test kit loads this way. |
+| 6f | **On the phone:** switching while playing, your own samples from storage, the five clicks by ear; fix what's found. |
+
+Decided with the user (2026-11-28): Rock, Jazz and Metal start as
+synthesized stand-ins, so all five buttons work and nothing licensed
+ships; the crash follows the hi-hat's preset; 6e adds
+`tauri-plugin-dialog` and `tauri-plugin-fs`.
+
+Not in step 6: keeping choices and picked samples across launches (step
+8).
+
+Done: 6a (`dpg-engine::clicks`: six sounds made when the engine is
+built - sine click, three-partial wood tick, two band-limited squares
+for the cowbell, fast sine clave, pitch-dropping bongo, a held square
+beep; each normalised to full scale. `Remote::set_click_sound`, read
+once a block; a click already ringing finishes in its old sound. The
+session's `MetronomeSound` steps to the next and survives a reconnect).
+
 ### 7. Look
 
 The kit photo with per-drum highlights (an image of our own, each

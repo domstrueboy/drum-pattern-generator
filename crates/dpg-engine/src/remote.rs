@@ -9,6 +9,7 @@ use dpg_samples::Kit;
 use drum_patterns::Pattern;
 use rtrb::{Consumer, Producer, PushError};
 
+use crate::clicks::ClickSound;
 use crate::clock::{BPM_MAX, BPM_MIN};
 use crate::engine::{Garbage, Shared};
 use crate::metronome::Subdivision;
@@ -135,6 +136,19 @@ impl Remote {
     /// The clicks a beat.
     pub fn subdivision(&self) -> Subdivision {
         Subdivision::from_index(self.shared.subdivision.load(Ordering::Relaxed))
+    }
+
+    /// What the metronome sounds like; a click already ringing finishes
+    /// in the old sound.
+    pub fn set_click_sound(&self, sound: ClickSound) {
+        self.shared
+            .click_sound
+            .store(sound.index(), Ordering::Relaxed);
+    }
+
+    /// The metronome's sound.
+    pub fn click_sound(&self) -> ClickSound {
+        ClickSound::from_index(self.shared.click_sound.load(Ordering::Relaxed))
     }
 
     /// The mixer's faders, solo and mute.

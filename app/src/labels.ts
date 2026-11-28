@@ -1,7 +1,14 @@
 // Every label on the screen, in each language. Until Settings has a
 // language choice (step 8), the phone's language picks.
 
-import type { DrumInstrument, Feel, HiHatAccents, Pulse, Subdivision } from "./session";
+import type {
+  ClickSound,
+  DrumInstrument,
+  Feel,
+  HiHatAccents,
+  Pulse,
+  Subdivision,
+} from "./session";
 
 export interface Labels {
   bars: string;
@@ -12,7 +19,7 @@ export interface Labels {
   bpm: string;
   less: string;
   more: string;
-  click: string;
+  clickSounds: Record<ClickSound, string>;
   subdivisions: Record<Subdivision, string>;
   color: string;
   sound: string;
@@ -66,7 +73,14 @@ const en: Labels = {
   bpm: "BPM",
   less: "Slower",
   more: "Faster",
-  click: "Click",
+  clickSounds: {
+    click: "Click",
+    ableton: "Ableton",
+    cowbell: "Cowbell",
+    clave: "Clave",
+    bongo: "Bongo",
+    electronic: "Electronic",
+  },
   subdivisions: { "4": "4", "8": "8", "8t": "8t", "16": "16" },
   color: "Color",
   sound: "Sound",
@@ -117,7 +131,14 @@ const ru: Labels = {
   bpm: "BPM",
   less: "Медленнее",
   more: "Быстрее",
-  click: "Клик",
+  clickSounds: {
+    click: "Клик",
+    ableton: "Ableton",
+    cowbell: "Ковбелл",
+    clave: "Клава",
+    bongo: "Бонго",
+    electronic: "Электро",
+  },
   subdivisions: { "4": "4", "8": "8", "8t": "8т", "16": "16" },
   color: "Цвет",
   sound: "Звук",

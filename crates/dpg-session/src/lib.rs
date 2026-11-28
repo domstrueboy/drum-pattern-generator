@@ -12,7 +12,10 @@ mod session;
 mod snapshot;
 
 pub use command::{Command, Fader};
-pub use names::{FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName, SubdivisionName};
+pub use names::{
+    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName,
+    SubdivisionName,
+};
 pub use notation::{CountView, Event, Group, Notation, NoteHit, Tuplet, notation};
 pub use parts::{Ladder, MAX_COUNT, Parts, RANDOM_COUNT, Set};
 pub use playhead::{Glide, MAX_GLIDE, Playhead, locate};

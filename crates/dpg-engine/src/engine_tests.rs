@@ -254,6 +254,23 @@ fn the_metronome_clicks_only_while_playing() {
 }
 
 #[test]
+fn each_metronome_sound_plays_its_own_click() {
+    let mut heard = Vec::new();
+    for sound in ClickSound::ALL {
+        let (mut engine, remote) = ready(kit(100, 1.0), pattern(1, &[]));
+        remote.set_metronome(true);
+        remote.set_click_sound(sound);
+        remote.play();
+        let out = render(&mut engine, 12 * TICK);
+        assert!(out.iter().any(|&s| s != 0.0), "{sound:?} is silent");
+        heard.push(out);
+    }
+    for (i, a) in heard.iter().enumerate() {
+        assert!(heard[i + 1..].iter().all(|b| a != b), "two sounds alike");
+    }
+}
+
+#[test]
 fn the_crash_plays_once_as_playing_starts() {
     let (mut engine, remote) = ready(kit_with_crash(), pattern(1, &[]));
     remote.play();

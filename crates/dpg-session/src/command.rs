@@ -52,6 +52,8 @@ pub enum Command {
         /// `4`, `8`, `8t` or `16`.
         value: SubdivisionName,
     },
+    /// The metronome's next sound; after the last, the first.
+    MetronomeSound,
     /// The pattern's length.
     Bars {
         /// 1 to 4.

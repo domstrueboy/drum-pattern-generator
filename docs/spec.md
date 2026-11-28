@@ -97,8 +97,10 @@ holds every value the spec asks for. 4/4 first; other time signatures
   start where the last one left off.
 - BPM changes by 1.
 - Subdivision: **4 / 8 / 8т / 16** = one, two, three or four clicks a beat.
-- Sound button cycles through 5 sounds: click; Ableton-style click;
-  cowbell; high clave, as on a CR-78-style drum machine; bongo.
+- Sound button cycles through 6 sounds: click; Ableton-style click;
+  cowbell; high clave, as on a CR-78-style drum machine; bongo;
+  electronic - a bright beep, like the user's Nux DP-2000's, that cuts
+  through an acoustic groove. The bar's first beat sounds higher.
 - **Tap tempo** sets the BPM from taps, and blinks in time: beats
   brighter, the chosen subdivisions dimmer.
 

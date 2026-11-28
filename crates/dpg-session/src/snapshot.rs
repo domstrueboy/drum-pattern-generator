@@ -4,7 +4,8 @@
 use serde::Serialize;
 
 use crate::names::{
-    FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName, SubdivisionName,
+    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName,
+    SubdivisionName,
 };
 use crate::notation::Notation;
 use crate::session::View;
@@ -21,6 +22,8 @@ pub struct Snapshot {
     pub metronome: bool,
     /// The metronome's clicks a beat.
     pub subdivision: SubdivisionName,
+    /// The metronome's sound.
+    pub metronome_sound: ClickSoundName,
     /// The pattern's length in bars.
     pub bars: u8,
     /// Stacked or scrolled bars.

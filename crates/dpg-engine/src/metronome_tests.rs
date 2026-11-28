@@ -81,34 +81,3 @@ fn subdivisions_survive_an_atomic() {
         assert_eq!(Subdivision::from_index(subdivision.index()), subdivision);
     }
 }
-
-#[test]
-fn the_bar_click_is_higher_and_subdivisions_quieter() {
-    let clicks = Clicks::new(48_000);
-    let (high, bar_gain) = clicks.sound(Click::Bar);
-    let (low, beat_gain) = clicks.sound(Click::Beat);
-    let (_, between_gain) = clicks.sound(Click::Between);
-    assert_eq!(bar_gain, beat_gain);
-    assert!((20.0 * (between_gain / beat_gain).log10() - SUBDIVISION_DB).abs() < 1e-4);
-    assert!(crossings(high) > 3 * crossings(low) / 2, "an octave up");
-}
-
-#[test]
-fn a_click_is_short_and_dies_away() {
-    let rate = 48_000;
-    let click = Clicks::new(rate).sound(Click::Beat).0.to_vec();
-    assert_eq!(click.len(), (rate * CLICK_MS / 1000) as usize);
-    let peak = |s: &[f32]| s.iter().fold(0f32, |m, x| m.max(x.abs()));
-    assert!(peak(&click) > 0.5 && peak(&click) <= 1.0);
-    assert!(
-        peak(&click[click.len() - 48..]) < 0.002,
-        "below -54 dB at the end"
-    );
-}
-
-fn crossings(samples: &[f32]) -> usize {
-    samples
-        .windows(2)
-        .filter(|w| (w[0] < 0.0) != (w[1] < 0.0))
-        .count()
-}

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// Metronome: on/off, BPM by 1, clicks a beat, and its sound (step 6).
+// Metronome: on/off, BPM by 1, clicks a beat, and its sound - each press
+// of the sound button steps to the next.
 import { useLabels } from "../labels";
 import type { SessionState, Subdivision } from "../session";
 import { useSession } from "../useSession";
@@ -48,7 +49,9 @@ const subdivisions: Subdivision[] = ["4", "8", "8t", "16"];
         {{ t.subdivisions[value] }}
       </button>
     </div>
-    <button class="wide">🔊 {{ t.click }}</button>
+    <button class="wide" @click="send({ type: 'metronomeSound' })">
+      🔊 {{ t.clickSounds[s.metronomeSound] }}
+    </button>
   </div>
 </template>
 
