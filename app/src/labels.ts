@@ -1,7 +1,7 @@
 // Every label on the screen, in each language. Until Settings has a
 // language choice (step 8), the phone's language picks.
 
-import type { DrumInstrument, Feel, Pulse, Subdivision } from "./session";
+import type { DrumInstrument, Feel, HiHatAccents, Pulse, Subdivision } from "./session";
 
 export interface Labels {
   bars: string;
@@ -47,6 +47,7 @@ export interface Labels {
   feel: string;
   feels: Record<Feel, string>;
   accents: string;
+  hiHatAccents: Record<HiHatAccents, string>;
   none: string;
   ghosts: string;
   generate: string;
@@ -96,6 +97,7 @@ const en: Labels = {
   feel: "Time feel",
   feels: { basic: "Basic", half: "Half time", double: "Double time" },
   accents: "Accents",
+  hiHatAccents: { off: "Off", beats: "On the beats", offbeats: "On the &" },
   none: "None",
   ghosts: "Ghost notes",
   generate: "Generate",
@@ -146,6 +148,7 @@ const ru: Labels = {
   feel: "Основной ритм",
   feels: { basic: "Базовый", half: "Халф-тайм", double: "Дабл-тайм" },
   accents: "Акценты",
+  hiHatAccents: { off: "Выкл.", beats: "На доли", offbeats: "На «и»" },
   none: "Нет",
   ghosts: "Гоуст-ноты",
   generate: "Сгенерировать",

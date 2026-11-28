@@ -269,3 +269,50 @@ mod random {
         assert!(p.get(12, Instrument::Snare).is_some());
     }
 }
+
+fn accented(p: &Pattern) -> Vec<u32> {
+    p.hits_of(Instrument::HiHat)
+        .filter(|h| h.kind == HitKind::Accent)
+        .map(|h| h.tick)
+        .collect()
+}
+
+#[test]
+fn accents_on_the_beats() {
+    let mut p = pulsed(TimeSignature::FOUR_FOUR, 1, NoteValue::Sixteenth);
+    hi_hat_accents(&mut p, HiHatAccents::Beats);
+    assert_eq!(accented(&p), [0, 12, 24, 36]);
+    assert_eq!(hat_ticks(&p).len(), 16);
+}
+
+#[test]
+fn accents_on_the_offbeats() {
+    let mut p = pulsed(TimeSignature::FOUR_FOUR, 1, NoteValue::Eighth);
+    hi_hat_accents(&mut p, HiHatAccents::Offbeats);
+    assert_eq!(accented(&p), [6, 18, 30, 42]);
+}
+
+#[test]
+fn eighth_triplets_have_no_offbeat_to_accent() {
+    let mut p = pulsed(TimeSignature::FOUR_FOUR, 1, NoteValue::EighthTriplet);
+    hi_hat_accents(&mut p, HiHatAccents::Offbeats);
+    assert!(accented(&p).is_empty());
+}
+
+#[test]
+fn accents_off_makes_every_hit_normal_again() {
+    let mut p = pulsed(TimeSignature::FOUR_FOUR, 1, NoteValue::Eighth);
+    hi_hat_accents(&mut p, HiHatAccents::Beats);
+    hi_hat_accents(&mut p, HiHatAccents::Off);
+    assert!(accented(&p).is_empty());
+}
+
+#[test]
+fn accents_leave_other_instruments_alone() {
+    let mut p = pulsed(TimeSignature::FOUR_FOUR, 1, NoteValue::Eighth);
+    p.set(Hit::new(0, Instrument::Snare, HitKind::Ghost))
+        .unwrap();
+    hi_hat_accents(&mut p, HiHatAccents::Beats);
+    let snare: Vec<_> = p.hits_of(Instrument::Snare).collect();
+    assert_eq!(snare[0].kind, HitKind::Ghost);
+}

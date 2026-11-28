@@ -130,6 +130,9 @@ impl Session {
                 self.change(|p| p.set_hi_hat_random_count(count));
             }
             Command::Density { percent } => self.change(|p| p.set_density(percent)),
+            Command::HiHatAccents { accents } => {
+                self.change(|p| p.hi_hat_accents = accents.into());
+            }
             Command::Feel { feel } => self.change(|p| p.set_feel(feel.into())),
             Command::Accents { count } => {
                 parts.set_accents(count, rng);
@@ -188,6 +191,7 @@ impl Session {
                 random_count: parts.hi_hat_set.count(),
                 random_index: parts.hi_hat_set.index(),
                 density: parts.density,
+                accents: parts.hi_hat_accents.into(),
             },
             snare: SnareView {
                 feel: parts.feel.into(),

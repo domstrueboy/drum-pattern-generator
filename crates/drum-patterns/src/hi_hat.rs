@@ -1,5 +1,6 @@
 //! The hi-hat part. A pulse is one hit every note value; Random keeps
 //! the pulse's hits on the beats and some of the others at random.
+//! Accents go on the beats or on the и, wherever the hits land on them.
 
 use rand::seq::IndexedRandom;
 use rand::{Rng, RngExt};
@@ -74,6 +75,42 @@ pub fn hi_hat_random(
         for tick in kept {
             set_hat(pattern, tick);
         }
+    }
+}
+
+/// Which hi-hat hits are accented.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
+pub enum HiHatAccents {
+    /// None: every hit is played the same.
+    #[default]
+    Off,
+    /// The hits on the beats: `1 2 3 4`.
+    Beats,
+    /// The hits on the и between the beats, as in disco or funk.
+    Offbeats,
+}
+
+/// Accents the hi-hat's hits that land where `accents` says, and makes
+/// the others normal. A pulse that never lands there - 8th triplets on
+/// the и - gets no accents. Other instruments are left alone.
+pub fn hi_hat_accents(pattern: &mut Pattern, accents: HiHatAccents) {
+    let per_beat = pattern.time().ticks_per_beat();
+    let accented = |tick: u32| match accents {
+        HiHatAccents::Off => false,
+        HiHatAccents::Beats => tick.is_multiple_of(per_beat),
+        HiHatAccents::Offbeats => tick % per_beat == per_beat / 2,
+    };
+    let hats: Vec<Hit> = pattern.hits_of(Instrument::HiHat).copied().collect();
+    for hat in hats {
+        let kind = if accented(hat.tick) {
+            HitKind::Accent
+        } else {
+            HitKind::Normal
+        };
+        let hit = Hit::new(hat.tick, Instrument::HiHat, kind);
+        pattern
+            .set(hit)
+            .expect("the hit was already in the pattern");
     }
 }
 

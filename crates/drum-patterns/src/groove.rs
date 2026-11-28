@@ -6,7 +6,7 @@ use rand::SeedableRng;
 use rand::rngs::StdRng;
 
 use crate::ghost_notes::ghost_notes;
-use crate::hi_hat::{hi_hat_laps, hi_hat_pulse, hi_hat_random};
+use crate::hi_hat::{HiHatAccents, hi_hat_accents, hi_hat_laps, hi_hat_pulse, hi_hat_random};
 use crate::kick::{base_kicks, extra_kicks};
 use crate::pattern::{Pattern, PatternError};
 use crate::snare::{Feel, snare};
@@ -30,6 +30,8 @@ pub struct Groove {
     /// `None` plays the whole pulse; `Some(density)` plays Random at that
     /// density (see [`hi_hat_random`]).
     pub hi_hat_random: Option<u8>,
+    /// Which hi-hat hits are accented.
+    pub hi_hat_accents: HiHatAccents,
     /// The snare's main hits.
     pub feel: Feel,
     /// Snare accents a bar.
@@ -56,6 +58,7 @@ impl Default for Groove {
             bars: 1,
             hi_hat: NoteValue::Eighth,
             hi_hat_random: None,
+            hi_hat_accents: HiHatAccents::Off,
             feel: Feel::Basic,
             accents: 0,
             ghosts: 0,
@@ -113,6 +116,7 @@ impl Groove {
                 hi_hat_random(&mut pattern, self.hi_hat, density, lap, &mut rng(part));
             }
         }
+        hi_hat_accents(&mut pattern, self.hi_hat_accents);
         Ok(pattern)
     }
 }

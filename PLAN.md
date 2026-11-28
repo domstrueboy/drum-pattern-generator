@@ -261,7 +261,9 @@ buttons, over the faders and photo, and scroll into view; the buttons
 keep their rows. Bar skip is a toggle: off, it opens its menu; on, it
 turns off. A Bar skip or Crash choice closes its menu; the instrument
 menus stay until Back. The snapshot reports the menus' limits, so the
-UI keeps no copy of them).
+UI keeps no copy of them; hi-hat accents added at the user's request,
+missed in the spec: off, on the beats or on the и - `hi_hat_accents`
+in `drum-patterns`, a field of `Groove` too).
 
 ### 6. Sounds
 

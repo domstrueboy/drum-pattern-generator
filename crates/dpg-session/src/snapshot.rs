@@ -3,7 +3,9 @@
 
 use serde::Serialize;
 
-use crate::names::{FeelName, InstrumentName, KindName, PulseName, SubdivisionName};
+use crate::names::{
+    FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName, SubdivisionName,
+};
 use crate::notation::Notation;
 use crate::session::View;
 
@@ -93,6 +95,8 @@ pub struct HiHatView {
     pub random_index: u8,
     /// Off-beat hits Random keeps, in percent.
     pub density: u8,
+    /// Where the hits are accented.
+    pub accents: HiHatAccentsName,
 }
 
 /// The Snare submenu's state.

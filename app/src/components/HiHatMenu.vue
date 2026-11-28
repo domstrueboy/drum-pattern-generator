@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// Hi-hat: the pulse in three columns (straight, triplet, dotted), Random
-// with its count of variants, and Density for Random.
+// Hi-hat: the pulse in three columns (straight, triplet, dotted), accents
+// on the beats or the и, Random with its count of variants, and Density
+// for Random.
 import { useLabels } from "../labels";
-import type { Pulse, SessionState } from "../session";
+import type { HiHatAccents, Pulse, SessionState } from "../session";
 import { useSession } from "../useSession";
 import CountStepper from "./CountStepper.vue";
 import MenuPanel from "./MenuPanel.vue";
@@ -13,6 +14,7 @@ const t = useLabels();
 
 // Row by row, so the columns read 4 8 16 | 4т 8т 16т | 4. 8.
 const pulses: (Pulse | null)[] = ["4", "4t", "4.", "8", "8t", "8.", "16", "16t", null];
+const accents: HiHatAccents[] = ["off", "beats", "offbeats"];
 
 function density(event: Event) {
   send({ type: "density", percent: Number((event.target as HTMLInputElement).value) });
@@ -35,6 +37,19 @@ function density(event: Event) {
           </button>
           <span v-else></span>
         </template>
+      </div>
+    </div>
+    <div class="field">
+      <span class="caption">{{ t.accents }}</span>
+      <div class="options">
+        <button
+          v-for="a in accents"
+          :key="a"
+          :class="{ selected: s.hiHat.accents === a }"
+          @click="send({ type: 'hiHatAccents', accents: a })"
+        >
+          {{ t.hiHatAccents[a] }}
+        </button>
       </div>
     </div>
     <div class="field">

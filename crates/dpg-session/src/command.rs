@@ -3,7 +3,7 @@
 
 use serde::Deserialize;
 
-use crate::names::{FeelName, InstrumentName, PulseName, SubdivisionName};
+use crate::names::{FeelName, HiHatAccentsName, InstrumentName, PulseName, SubdivisionName};
 use crate::session::View;
 
 #[cfg(test)]
@@ -92,6 +92,11 @@ pub enum Command {
     Density {
         /// Off-beat hits kept, in percent.
         percent: u8,
+    },
+    /// Where the hi-hat is accented.
+    HiHatAccents {
+        /// Off, on the beats or on the и.
+        accents: HiHatAccentsName,
     },
     /// The snare's time feel.
     Feel {

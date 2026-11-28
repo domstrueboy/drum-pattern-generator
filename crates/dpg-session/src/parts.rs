@@ -3,9 +3,9 @@
 //! the parts placed around it may move.
 
 use drum_patterns::{
-    EXTRA_KICK_LEVELS, Feel, GHOST_LEVELS, HI_HAT_DENSITY, MAX_BARS, NoteValue, Pattern,
-    TimeSignature, Variants, base_kicks, extra_kicks, ghost_notes, hi_hat_laps, hi_hat_pulse,
-    hi_hat_random, snare,
+    EXTRA_KICK_LEVELS, Feel, GHOST_LEVELS, HI_HAT_DENSITY, HiHatAccents, MAX_BARS, NoteValue,
+    Pattern, TimeSignature, Variants, base_kicks, extra_kicks, ghost_notes, hi_hat_accents,
+    hi_hat_laps, hi_hat_pulse, hi_hat_random, snare,
 };
 use rand::rngs::StdRng;
 use rand::{Rng, RngExt, SeedableRng};
@@ -106,6 +106,7 @@ pub struct Parts {
     pub(crate) pulse: NoteValue,
     pub(crate) hi_hat_random: bool,
     pub(crate) density: u8,
+    pub(crate) hi_hat_accents: HiHatAccents,
     pub(crate) hi_hat_set: Set,
     pub(crate) feel: Feel,
     pub(crate) accents: u8,
@@ -128,6 +129,7 @@ impl Parts {
             pulse: NoteValue::Eighth,
             hi_hat_random: false,
             density: HI_HAT_DENSITY,
+            hi_hat_accents: HiHatAccents::Off,
             hi_hat_set: Set::new(rng.random()),
             feel: Feel::Basic,
             accents: 0,
@@ -266,6 +268,7 @@ impl Parts {
                 } else {
                     hi_hat_pulse(&mut pattern, self.pulse, lap);
                 }
+                hi_hat_accents(&mut pattern, self.hi_hat_accents);
                 pattern
             })
             .collect()

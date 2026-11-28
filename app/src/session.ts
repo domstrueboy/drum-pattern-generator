@@ -4,6 +4,7 @@
 export type Pulse = "4" | "8" | "16" | "4t" | "8t" | "16t" | "4." | "8.";
 export type Subdivision = "4" | "8" | "8t" | "16";
 export type Feel = "basic" | "half" | "double";
+export type HiHatAccents = "off" | "beats" | "offbeats";
 export type Instrument = "crash" | "hiHat" | "snare" | "kick";
 export type Kind = "accent" | "normal" | "ghost";
 export type View = "stacked" | "scrolled";
@@ -25,6 +26,7 @@ export type Command =
   | { type: "hiHatRandom" }
   | { type: "hiHatRandomCount"; count: number }
   | { type: "density"; percent: number }
+  | { type: "hiHatAccents"; accents: HiHatAccents }
   | { type: "feel"; feel: Feel }
   | { type: "accents"; count: number }
   | { type: "ghosts"; count: number }
@@ -110,6 +112,7 @@ export interface SessionState {
     randomCount: number;
     randomIndex: number;
     density: number;
+    accents: HiHatAccents;
   };
   snare: {
     feel: Feel;

@@ -84,8 +84,16 @@ function staveNote(event: NoteEvent, colors: Record<Instrument, string>): StaveN
       note.addModifier(new Parenthesis(Modifier.Position.RIGHT), i);
     }
   });
-  if (event.hits.some((h) => h.kind === "accent")) {
-    note.addModifier(new Articulation("a>").setPosition(Modifier.Position.ABOVE), 0);
+  // The accent mark in the accented instrument's colour, not the lowest
+  // notehead's: a hi-hat accent over a kick stays cyan.
+  const accent = keys.findIndex(([instrument]) =>
+    event.hits.some((h) => h.instrument === instrument && h.kind === "accent"),
+  );
+  if (accent >= 0) {
+    const c = colors[keys[accent][0]];
+    const mark = new Articulation("a>").setPosition(Modifier.Position.ABOVE);
+    mark.setStyle({ fillStyle: c, strokeStyle: c });
+    note.addModifier(mark, accent);
   }
   if (event.dots > 0) Dot.buildAndAttach([note], { all: true });
   return note;

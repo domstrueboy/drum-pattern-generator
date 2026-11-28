@@ -2,7 +2,7 @@
 //! `half` - so commands and snapshots read like the spec's menus.
 
 use dpg_engine::Subdivision;
-use drum_patterns::{Feel, HitKind, Instrument, NoteValue};
+use drum_patterns::{Feel, HiHatAccents, HitKind, Instrument, NoteValue};
 use serde::{Deserialize, Serialize};
 
 #[cfg(test)]
@@ -61,6 +61,15 @@ names! {
         Eighth = "8" => Subdivision::Eighth,
         Triplet = "8t" => Subdivision::Triplet,
         Sixteenth = "16" => Subdivision::Sixteenth,
+    }
+}
+
+names! {
+    /// Where the hi-hat is accented.
+    HiHatAccentsName => HiHatAccents {
+        Off = "off" => HiHatAccents::Off,
+        Beats = "beats" => HiHatAccents::Beats,
+        Offbeats = "offbeats" => HiHatAccents::Offbeats,
     }
 }
 

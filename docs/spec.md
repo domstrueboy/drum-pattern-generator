@@ -144,6 +144,10 @@ the next one, and after the last back to the first.
   the pattern too, counted in bars of playback like the crash, so a
   1-bar pattern still hears the full cycle. The notation redraws the
   hi-hat each loop to show what is played.
+- **Accents:** off (the default), on the beats (`1 2 3 4`), or on the
+  `и` between them, as in disco or funk - on the hits the pulse lands
+  there; a pulse that never lands on the `и` (8th triplets) gets none.
+  With Random, the same rule applies to the hits that stay.
 - **Random** (see above).
 - **Density:** how many of Random's off-beat hits stay, sparser to
   denser; 50% by default.

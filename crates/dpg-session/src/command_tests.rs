@@ -12,6 +12,12 @@ fn commands_read_from_the_ui_json() {
         Command::NudgeBpm { by: -1.0 }
     );
     assert_eq!(
+        parse(r#"{"type":"hiHatAccents","accents":"offbeats"}"#),
+        Command::HiHatAccents {
+            accents: HiHatAccentsName::Offbeats
+        }
+    );
+    assert_eq!(
         parse(r#"{"type":"pulse","value":"8."}"#),
         Command::Pulse {
             value: PulseName::DottedEighth

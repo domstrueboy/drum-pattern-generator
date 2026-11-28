@@ -1,7 +1,9 @@
 use dpg_engine::{DEFAULT_BPM, Engine};
 
 use super::*;
-use crate::names::{FeelName, InstrumentName, KindName, PulseName, SubdivisionName};
+use crate::names::{
+    FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName, SubdivisionName,
+};
 
 /// A session over an engine that is never played - the remote's settings
 /// are what's under test.
@@ -291,4 +293,22 @@ fn reconnecting_keeps_every_setting_but_stops() {
 fn a_stopped_session_has_no_playhead() {
     let (mut session, _engine) = session();
     assert_eq!(session.playhead(0.0), None);
+}
+
+#[test]
+fn hi_hat_accents_go_on_the_beats_and_are_spelled() {
+    let (mut session, _engine) = session();
+    let s = apply(
+        &mut session,
+        &[Command::HiHatAccents {
+            accents: HiHatAccentsName::Beats,
+        }],
+    );
+    assert_eq!(s.hi_hat.accents, HiHatAccentsName::Beats);
+    let accented: Vec<u32> = s.laps[0]
+        .iter()
+        .filter(|h| h.instrument == InstrumentName::HiHat && h.kind == KindName::Accent)
+        .map(|h| h.tick)
+        .collect();
+    assert_eq!(accented, [0, 12, 24, 36]);
 }
