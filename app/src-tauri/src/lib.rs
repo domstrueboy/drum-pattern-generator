@@ -58,11 +58,8 @@ fn open_output() -> Result<(CpalOutput, Remote), String> {
         engine
     })
     .map_err(|e| e.to_string())?;
-    let mut remote = remote.expect("open built the engine");
-    remote
-        .set_kit(dpg_samples::placeholder_kit(output.info().rate))
-        .map_err(|e| e.to_string())?;
-    Ok((output, remote))
+    // The session makes the kit and sends it.
+    Ok((output, remote.expect("open built the engine")))
 }
 
 impl Shell {

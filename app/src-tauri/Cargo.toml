@@ -19,7 +19,6 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 dpg-engine = { path = "../../crates/dpg-engine" }
-dpg-samples = { path = "../../crates/dpg-samples" }
 dpg-hal = { path = "../../crates/dpg-hal" }
 dpg-session = { path = "../../crates/dpg-session" }
 tauri = { version = "2", features = [] }

@@ -13,7 +13,7 @@ mod snapshot;
 
 pub use command::{Command, Fader};
 pub use names::{
-    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName,
+    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PresetName, PulseName,
     SubdivisionName,
 };
 pub use notation::{CountView, Event, Group, Notation, NoteHit, Tuplet, notation};
@@ -22,5 +22,5 @@ pub use playhead::{Glide, MAX_GLIDE, Playhead, locate};
 pub use session::{Session, View};
 pub use snapshot::{
     BarSkipView, ChannelView, HiHatView, HitView, KickView, LIMITS, Limits, MixerView, Snapshot,
-    SnareView,
+    SnareView, SoundsView,
 };

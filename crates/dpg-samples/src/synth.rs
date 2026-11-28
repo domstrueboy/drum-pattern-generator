@@ -18,9 +18,14 @@ mod tests;
 pub fn placeholder_kit(rate: u32) -> Kit {
     let mut kit = Kit::new(rate);
     for instrument in Instrument::ALL {
-        kit.set(instrument, Sound::new(render(instrument, rate), None));
+        kit.set(instrument, placeholder_sound(instrument, rate));
     }
     kit
+}
+
+/// The placeholder kit's sound for one instrument.
+pub(crate) fn placeholder_sound(instrument: Instrument, rate: u32) -> Sound {
+    Sound::new(render(instrument, rate), None)
 }
 
 fn render(instrument: Instrument, rate: u32) -> Vec<f32> {

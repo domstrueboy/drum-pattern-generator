@@ -3,7 +3,9 @@
 
 use serde::Deserialize;
 
-use crate::names::{FeelName, HiHatAccentsName, InstrumentName, PulseName, SubdivisionName};
+use crate::names::{
+    FeelName, HiHatAccentsName, InstrumentName, PresetName, PulseName, SubdivisionName,
+};
 use crate::session::View;
 
 #[cfg(test)]
@@ -54,6 +56,14 @@ pub enum Command {
     },
     /// The metronome's next sound; after the last, the first.
     MetronomeSound,
+    /// An instrument's kit style, from the Sound menu. The crash has no
+    /// choice of its own: it follows the hi-hat.
+    SoundPreset {
+        /// The hi-hat, snare or kick.
+        instrument: InstrumentName,
+        /// The style.
+        preset: PresetName,
+    },
     /// The pattern's length.
     Bars {
         /// 1 to 4.

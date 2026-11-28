@@ -11,6 +11,7 @@ workspace = true
 [dependencies]
 drum-patterns = { path = "../drum-patterns" }
 dpg-engine = { path = "../dpg-engine" }
+dpg-samples = { path = "../dpg-samples" }
 rand = { version = "0.10.4", default-features = false, features = ["alloc", "std_rng"] }
 serde = { version = "1", features = ["derive"] }
 

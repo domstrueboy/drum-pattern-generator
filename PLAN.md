@@ -314,7 +314,12 @@ built - sine click, three-partial wood tick, two band-limited squares
 for the cowbell, fast sine clave, pitch-dropping bongo, a held square
 beep; each normalised to full scale. `Remote::set_click_sound`, read
 once a block; a click already ringing finishes in its old sound. The
-session's `MetronomeSound` steps to the next and survives a reconnect).
+session's `MetronomeSound` steps to the next and survives a reconnect),
+6b (`dpg_samples::Preset` and `preset_sound` - every preset the
+placeholder's sound until 6c; the session owns the kit: built from each
+instrument's choice at `Remote::rate`, changed one instrument at a time
+and sent as a copy, made afresh on a reconnect at the new rate. The
+shell no longer loads a kit; the session now uses `dpg-samples`).
 
 ### 7. Look
 

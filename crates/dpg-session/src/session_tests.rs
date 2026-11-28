@@ -2,7 +2,7 @@ use dpg_engine::{DEFAULT_BPM, Engine};
 
 use super::*;
 use crate::names::{
-    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PulseName,
+    ClickSoundName, FeelName, HiHatAccentsName, InstrumentName, KindName, PresetName, PulseName,
     SubdivisionName,
 };
 
@@ -276,10 +276,15 @@ fn reconnecting_keeps_every_setting_but_stops() {
             },
             Command::Ghosts { count: 2 },
             Command::MetronomeSound,
+            Command::SoundPreset {
+                instrument: InstrumentName::Kick,
+                preset: PresetName::Metal,
+            },
         ],
     );
     let (_new_engine, remote) = Engine::new(44_100);
     session.reconnect(remote);
+    assert_eq!(session.kit().rate(), 44_100, "the kit made at the new rate");
     let after = session.snapshot();
     assert!(!after.playing);
     assert_eq!(
@@ -323,4 +328,64 @@ fn the_sound_button_steps_through_the_six_and_round() {
     assert_eq!(s.metronome_sound, ClickSoundName::Electronic);
     let s = apply(&mut session, &[Command::MetronomeSound]);
     assert_eq!(s.metronome_sound, ClickSoundName::Click);
+}
+
+#[test]
+fn a_new_session_plays_rock_on_every_instrument() {
+    let (session, _engine) = session();
+    let s = session.snapshot();
+    assert_eq!(s.sounds.hi_hat, PresetName::Rock);
+    assert_eq!(s.sounds.snare, PresetName::Rock);
+    assert_eq!(s.sounds.kick, PresetName::Rock);
+    assert_eq!(session.kit().rate(), 48_000);
+    for instrument in Instrument::ALL {
+        assert!(session.kit().sound(instrument).is_some(), "{instrument:?}");
+    }
+}
+
+#[test]
+fn each_instrument_chooses_its_own_preset() {
+    let (mut session, _engine) = session();
+    let s = apply(
+        &mut session,
+        &[
+            Command::SoundPreset {
+                instrument: InstrumentName::Snare,
+                preset: PresetName::Jazz,
+            },
+            Command::SoundPreset {
+                instrument: InstrumentName::Kick,
+                preset: PresetName::Electro,
+            },
+        ],
+    );
+    assert_eq!(s.sounds.hi_hat, PresetName::Rock);
+    assert_eq!(s.sounds.snare, PresetName::Jazz);
+    assert_eq!(s.sounds.kick, PresetName::Electro);
+    let kit = session.kit();
+    let expected =
+        dpg_samples::preset_sound(dpg_samples::Preset::Electro, Instrument::Kick, 48_000);
+    assert_eq!(kit.sound(Instrument::Kick), Some(&expected));
+}
+
+#[test]
+fn the_crash_follows_the_hi_hat_and_has_no_choice_of_its_own() {
+    let (mut session, _engine) = session();
+    let s = apply(
+        &mut session,
+        &[
+            Command::SoundPreset {
+                instrument: InstrumentName::HiHat,
+                preset: PresetName::HipHop,
+            },
+            Command::SoundPreset {
+                instrument: InstrumentName::Crash,
+                preset: PresetName::Metal,
+            },
+        ],
+    );
+    assert_eq!(s.sounds.hi_hat, PresetName::HipHop);
+    let expected =
+        dpg_samples::preset_sound(dpg_samples::Preset::HipHop, Instrument::Crash, 48_000);
+    assert_eq!(session.kit().sound(Instrument::Crash), Some(&expected));
 }

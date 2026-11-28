@@ -2,6 +2,7 @@
 //! `half` - so commands and snapshots read like the spec's menus.
 
 use dpg_engine::{ClickSound, Subdivision};
+use dpg_samples::Preset;
 use drum_patterns::{Feel, HiHatAccents, HitKind, Instrument, NoteValue};
 use serde::{Deserialize, Serialize};
 
@@ -82,6 +83,17 @@ names! {
         Clave = "clave" => ClickSound::Clave,
         Bongo = "bongo" => ClickSound::Bongo,
         Electronic = "electronic" => ClickSound::Electronic,
+    }
+}
+
+names! {
+    /// A kit style in the Sound menu.
+    PresetName => Preset {
+        Rock = "rock" => Preset::Rock,
+        HipHop = "hipHop" => Preset::HipHop,
+        Electro = "electro" => Preset::Electro,
+        Jazz = "jazz" => Preset::Jazz,
+        Metal = "metal" => Preset::Metal,
     }
 }
 

@@ -15,8 +15,8 @@ drum-patterns   pattern model + generator rules (no audio, no UI, no I/O)
 dpg-play        dev tool: a terminal player with a local kit (never shipped)
 ```
 
-Dependency direction: app -> session -> engine; app/play -> engine ->
-samples, hal; anything may use `drum-patterns`, and it uses nothing of
+Dependency direction: app -> session -> engine, samples; app/play ->
+engine -> samples, hal; anything may use `drum-patterns`, and it uses nothing of
 ours.
 
 **Hard boundaries** - never cross:

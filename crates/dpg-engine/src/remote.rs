@@ -203,6 +203,11 @@ impl Remote {
         CrashRule::unpack(self.shared.crash.load(Ordering::Relaxed))
     }
 
+    /// The output's sample rate: every kit must be made at it.
+    pub fn rate(&self) -> u32 {
+        self.rate
+    }
+
     /// Plays new hits on `kit` from the next block on; hits still ringing
     /// finish on the old one. The kit must be at the output's rate.
     pub fn set_kit(&mut self, kit: Kit) -> Result<(), WrongRate> {
