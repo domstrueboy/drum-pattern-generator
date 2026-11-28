@@ -56,13 +56,21 @@ function color(name: string): string {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-function staveNote(event: NoteEvent, colors: Record<Instrument, string>): StaveNote {
+function staveNote(
+  event: NoteEvent,
+  colors: Record<Instrument, string>,
+  ink: string,
+): StaveNote {
+  // VexFlow draws stems and flags black whatever the context says: black
+  // on this background hides them and cuts into the noteheads.
+  const style = { fillStyle: ink, strokeStyle: ink };
   if (event.rest) {
     const rest = new StaveNote({
       keys: ["b/4"],
       duration: `${event.value}r`,
       dots: event.dots,
     });
+    rest.setStyle(style);
     if (event.dots > 0) Dot.buildAndAttach([rest], { all: true });
     return rest;
   }
@@ -75,6 +83,7 @@ function staveNote(event: NoteEvent, colors: Record<Instrument, string>): StaveN
     dots: event.dots,
     stemDirection: Stem.UP,
   });
+  note.setStyle(style);
   keys.forEach(([instrument], i) => {
     const c = colors[instrument];
     note.setKeyStyle(i, { fillStyle: c, strokeStyle: c });
@@ -141,7 +150,7 @@ export function drawBar(
   const allBeams: Beam[] = [];
   const tuplets: Tuplet[] = [];
   for (const group of groups) {
-    const own = group.events.map((e) => staveNote(e, colors));
+    const own = group.events.map((e) => staveNote(e, colors, ink));
     notes.push(...own);
     events.push(...group.events);
     allBeams.push(...beams(own, group.events));

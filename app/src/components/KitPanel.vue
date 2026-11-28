@@ -106,7 +106,6 @@ function toggle(i: DrumInstrument) {
   column-gap: 8px;
   align-items: center;
   padding: 8px;
-  min-height: 200px;
   background: rgba(0, 0, 0, 0.3);
 }
 
